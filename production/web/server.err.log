@@ -1,0 +1,713 @@
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 61225)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x8a' in position 36: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 54196)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x91' in position 30: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 61056)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x8b' in position 30: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 51999)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x92' in position 36: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 56116)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x80' in position 25: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 64928)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 377, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request syntax (%r)" % requestline)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x88' in position 30: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 58397)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x8a' in position 27: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 63520)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 61-62: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 53737)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x90' in position 26: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 52906)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x82' in position 41: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 57720)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\x88' in position 38: character maps to <undefined>
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 61383)
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 346, in parse_request
+    raise ValueError
+ValueError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 318, in _handle_request_noblock
+    self.process_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 349, in process_request
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 126, in __init__
+    super().__init__(*args, directory=str(ROOT), **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 474, in handle_one_request
+    if not self.parse_request():
+           ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 363, in parse_request
+    self.send_error(
+    ~~~~~~~~~~~~~~~^
+        HTTPStatus.BAD_REQUEST,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        "Bad request version (%r)" % version)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 527, in send_error
+    self.send_response(code, message)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 561, in send_response
+    self.log_request(code)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\http\server.py", line 613, in log_request
+    self.log_message('"%s" %s %s',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+                     self.requestline, str(code), str(size))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\Documents\id\production\web2\web\server.py", line 170, in log_message
+    print(f'  [{ts}] {fmt % args}')
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\MSI\AppData\Local\Python\pythoncore-3.14-64\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 27-28: character maps to <undefined>
+----------------------------------------

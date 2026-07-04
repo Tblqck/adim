@@ -1,0 +1,22 @@
+
+  +--------------------------------------------------+
+  |  KYC Verify  (HTTP - Render handles SSL)          |
+  +--------------------------------------------------+
+  |  Port     : 5000
+  |  Saves    : C:\Users\MSI\Documents\id\production\web2\web\captures
+  |  Telegram : NOT configured (set TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID)
+  |  Ctrl+C to stop
+  +--------------------------------------------------+
+
+  [08:32:32] code 400, message Bad request version ('\x83û»Õlüw\x82Df¤¤°>\x9fET!ý,\x97Ú_lÄËð\x0e¿')
+  [08:32:32] code 400, message Bad request version ('\x00\x02\x01\x00ÿ\x01\x00\x01\x00\x00\x12\x00\x00\x00')
+  [08:32:32] code 400, message Bad request version ('ÊÊ\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06¥')
+  [08:32:33] code 400, message Bad request version ('ý)¸\x84¾:¸á¹Pç\x84¹~³I\x00gP©)NÒù\x9c\x8fú½\x8b\x8fë\x80\x00')
+  [08:32:34] code 400, message Bad request version ('h,R7\x9d\x98\x94\x19kz@\x9aF[CR\x88\x07´\x91?ìuýÊ\\·7c\x14Ò')
+  [08:32:34] code 400, message Bad request syntax ('\x16\x03\x01\x06ò\x01\x00\x06î\x03\x03±xýÞ+\x88\x18£2n;x')
+  [08:32:34] code 400, message Bad request version ('localhost\x00')
+  [08:32:34] code 400, message Bad request version ('m\x8cWiåc¬')
+  [08:32:39] code 400, message Bad request version ('IË\x19¿¢{\x9b¢d¶\x98okÇP\x83\x00')
+  [08:32:40] code 400, message Bad request version ('\x9a\x9a\x13\x01\x13\x02\x13\x03À+À/À,À0Ì©Ì¨À\x13À\x14\x00\x9c\x00\x9d\x00/\x005\x01\x00\x06eJJ\x00\x00\x00')
+  [08:32:40] code 400, message Bad request version ('ì\x08\x16+Ï)Ûw½ã¤l\x01\x87MÉ\x16ÍVÏâ\x95!')
+  [08:32:40] code 400, message Bad request version ('\x04z\x17§g\x01Gõ')
