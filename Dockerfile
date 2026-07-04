@@ -25,8 +25,11 @@ EXPOSE 8000
 
 # PORT env var is set by Render (10000) and EC2 docker-compose (8000).
 # Shell form lets ${PORT:-8000} expand at runtime.
+# --workers 1: each worker loads its own copy of the ONNX models (~200MB+),
+# so a second worker roughly doubles memory footprint for no benefit on a
+# memory-constrained instance.
 CMD uvicorn production.api.main:app \
     --host 0.0.0.0 \
     --port ${PORT:-8000} \
-    --workers 2 \
+    --workers 1 \
     --timeout-keep-alive 30
