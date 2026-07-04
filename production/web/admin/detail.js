@@ -1,11 +1,26 @@
 const id = new URLSearchParams(location.search).get('id');
 const panels = {
   overview:  document.querySelector('[data-panel="overview"]'),
+  scores:    document.querySelector('[data-panel="scores"]'),
   mrz:       document.querySelector('[data-panel="mrz"]'),
   cross:     document.querySelector('[data-panel="cross"]'),
   forensics: document.querySelector('[data-panel="forensics"]'),
   pep:       document.querySelector('[data-panel="pep"]'),
 };
+
+// Canonical editable fields — key is what gets sent back as corrected_fields.
+const EDITABLE_FIELDS = [
+  ['given_names',   'Given name',       ['given_name', 'first_name']],
+  ['surname',       'Surname',          ['last_name']],
+  ['date_of_birth', 'Date of birth',    ['dob', 'birth_date']],
+  ['nationality',   'Nationality',      []],
+  ['id_number',     'Document number',  ['doc_number', 'document_number', 'passport_number']],
+  ['issue_date',    'Issue date',       []],
+  ['expiry_date',   'Expiry',           ['expiry']],
+];
+
+let currentRow = null;
+let editing = false;
 
 document.getElementById('tabbar').addEventListener('click', (e) => {
   const tab = e.target.closest('.admin-tab');
@@ -15,10 +30,15 @@ document.getElementById('tabbar').addEventListener('click', (e) => {
   Object.entries(panels).forEach(([k, el]) => { el.style.display = k === name ? '' : 'none'; });
 });
 
+// field(row)(canonicalKey) — corrected_fields overlay wins, then the
+// structured extracted_id_data column, then the raw ocr_fields JSONB, then
+// any aliases (older field names / MRZ naming).
 function field(row) {
+  const corrected = row.corrected_fields || {};
   const val = (row.extracted_id_data && row.extracted_id_data[0]) || {};
   const ocr = (row.pipeline_response && row.pipeline_response.ocr_fields) || {};
   return (key, ...aliases) => {
+    if (corrected[key]) return corrected[key];
     for (const k of [key, ...aliases]) {
       if (val[k]) return val[k];
       if (ocr[k]) return ocr[k];
@@ -27,15 +47,104 @@ function field(row) {
   };
 }
 
+function isCorrected(row, key) {
+  return !!(row.corrected_fields && row.corrected_fields[key]);
+}
+
 function mrzFields(row) {
   const mrz = row.pipeline_response && row.pipeline_response.mrz;
   return mrz && mrz.fields ? mrz.fields : null;
 }
 
+// ── Review status / actions ─────────────────────────────────────────────
+
+function renderReviewStatus(row) {
+  const badge = document.getElementById('review-status');
+  if (row.reviewed) {
+    badge.style.display = '';
+    badge.className = 'badge blue';
+    badge.textContent = `Reviewed by ${row.reviewed_by || 'unknown'}`;
+  } else {
+    badge.style.display = 'none';
+  }
+  document.getElementById('reviewer-name').value = row.reviewed_by || '';
+}
+
+function collectCorrections() {
+  const corrections = {};
+  document.querySelectorAll('[data-edit-field]').forEach((input) => {
+    const key = input.dataset.editField;
+    const value = input.value.trim();
+    if (value && value !== input.dataset.original) {
+      corrections[key] = value;
+    }
+  });
+  return corrections;
+}
+
+async function submitReview(verified) {
+  const reviewedBy = document.getElementById('reviewer-name').value.trim();
+  if (!reviewedBy) {
+    alert('Enter your name in "Reviewed by" before saving/approving/rejecting.');
+    return;
+  }
+  const corrected_fields = editing ? collectCorrections() : undefined;
+  if (verified === undefined && (!corrected_fields || !Object.keys(corrected_fields).length)) {
+    alert('No changed values to save.');
+    return;
+  }
+
+  const body = { reviewed_by: reviewedBy, corrected_fields };
+  if (verified !== undefined) body.verified = verified;
+
+  const resp = await adminFetch(`/verifications/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) {
+    const respBody = await resp.json().catch(() => ({}));
+    alert(respBody.detail || `Update failed (${resp.status})`);
+    return;
+  }
+  editing = false;
+  document.getElementById('edit-btn').textContent = 'Edit values';
+  document.getElementById('save-btn').style.display = 'none';
+  await load();
+}
+
+document.getElementById('approve-btn').addEventListener('click', () => submitReview(true));
+document.getElementById('reject-btn').addEventListener('click', () => submitReview(false));
+document.getElementById('save-btn').addEventListener('click', () => submitReview(undefined));
+document.getElementById('edit-btn').addEventListener('click', () => {
+  editing = !editing;
+  document.getElementById('edit-btn').textContent = editing ? 'Cancel edit' : 'Edit values';
+  document.getElementById('save-btn').style.display = editing ? '' : 'none';
+  if (currentRow) renderOverview(currentRow);
+});
+
 // ── Overview ─────────────────────────────────────────────────────────────
 
-function renderOverview(row) {
+function identityFieldCard(row, key, label, aliases) {
   const f = field(row);
+  const value = f(key, ...aliases) || '';
+  const corrected = isCorrected(row, key);
+
+  if (editing) {
+    return `
+      <div class="field-card">
+        <div class="label">${escapeHtml(label)}</div>
+        <input type="text" class="edit-input" data-edit-field="${key}" data-original="${escapeHtml(value)}" value="${escapeHtml(value)}">
+      </div>`;
+  }
+  return `
+    <div class="field-card">
+      <div class="label">${escapeHtml(label)} ${corrected ? '<span class="badge blue" style="margin-left:4px">corrected</span>' : ''}</div>
+      <div class="value">${escapeHtml(value || '—')}</div>
+    </div>`;
+}
+
+function renderOverview(row) {
   const badgeClass = verdictBadgeClass(row.verified, row.overall_verdict);
   const badgeText  = (row.overall_verdict || (row.verified ? 'verified' : 'pending')).replace(/_/g, ' ');
   const images = row.images || {};
@@ -43,7 +152,7 @@ function renderOverview(row) {
   const imageCards = [];
   if (images.id_front_url) imageCards.push(['ID front', images.id_front_url]);
   if (images.id_back_url)  imageCards.push(['ID back', images.id_back_url]);
-  (images.face_urls || []).forEach((u, i) => imageCards.push([`Face frame ${i + 1}`, u]));
+  (images.face_urls || []).forEach((u, i) => imageCards.push([`Liveness frame ${i + 1}`, u]));
 
   panels.overview.innerHTML = `
     <div class="admin-panel">
@@ -59,14 +168,9 @@ function renderOverview(row) {
     </div>
 
     <div class="admin-panel">
-      <h3>Extracted identity</h3>
+      <h3>Extracted identity ${editing ? '<span class="admin-note" style="display:inline-block;margin:0 0 0 10px;padding:2px 8px">Editing — change a value, then Approve/Reject to save</span>' : ''}</h3>
       <div class="field-grid">
-        <div class="field-card"><div class="label">Given name</div><div class="value">${escapeHtml(f('given_names', 'given_name', 'first_name') || '—')}</div></div>
-        <div class="field-card"><div class="label">Surname</div><div class="value">${escapeHtml(f('surname', 'last_name') || '—')}</div></div>
-        <div class="field-card"><div class="label">Date of birth</div><div class="value">${escapeHtml(f('date_of_birth', 'dob', 'birth_date') || '—')}</div></div>
-        <div class="field-card"><div class="label">Nationality</div><div class="value">${escapeHtml(f('nationality') || '—')}</div></div>
-        <div class="field-card"><div class="label">Document number</div><div class="value">${escapeHtml(f('id_number', 'doc_number', 'document_number', 'passport_number') || '—')}</div></div>
-        <div class="field-card"><div class="label">Expiry</div><div class="value">${escapeHtml(f('expiry_date', 'expiry') || '—')}</div></div>
+        ${EDITABLE_FIELDS.map(([key, label, aliases]) => identityFieldCard(row, key, label, aliases)).join('')}
       </div>
     </div>
 
@@ -77,6 +181,52 @@ function renderOverview(row) {
             <figure><img src="${escapeHtml(url)}" alt="${escapeHtml(label)}" loading="lazy"><figcaption>${escapeHtml(label)}</figcaption></figure>
           `).join('')}</div>`
         : `<div class="admin-note">No images stored for this verification (Supabase Storage may not be configured, or upload is still in progress).</div>`}
+    </div>
+  `;
+}
+
+// ── Model Scores tab ─────────────────────────────────────────────────────
+
+function scoreCard(label, score, verdict, modelLabel, extraBadge) {
+  return `
+    <div class="field-card">
+      <div class="label">${escapeHtml(label)}</div>
+      <div class="value">${fmtPct(score)} ${verdict ? `<span class="badge ${verdictBadgeClass(null, verdict)}" style="margin-left:6px">${escapeHtml(verdict.replace(/_/g, ' '))}</span>` : ''}</div>
+      <div class="admin-note" style="margin:8px 0 0;padding:6px 10px">${escapeHtml(modelLabel)}${extraBadge ? ' · ' + extraBadge : ''}</div>
+    </div>`;
+}
+
+function renderScores(row) {
+  const wordCount = row.ocr_word_count;
+  const extracted = (row.extracted_id_data && row.extracted_id_data[0]) || {};
+  const sources = extracted.field_sources || null;
+
+  panels.scores.innerHTML = `
+    <div class="admin-panel">
+      <h3>Per-model results</h3>
+      <div class="admin-note">Each score is tagged with the model or method that actually produced it, so a "heuristic" fallback score can be weighted differently from a real ONNX model result.</div>
+      <div class="field-grid">
+        ${scoreCard('Face match', row.face_match_score, row.face_match_verdict, 'ArcFace R50 (w600k_r50.onnx) — cosine similarity vs ID photo')}
+        ${scoreCard('Liveness', row.liveness_score, row.liveness_verdict, row.liveness_method === 'onnx' ? 'MiniFASNetV2.onnx (real anti-spoofing model)' : 'Heuristic fallback — Laplacian sharpness, NOT the ONNX anti-spoofing model')}
+        ${scoreCard('Document match', row.document_match_score, row.document_match_verdict, 'ORB + colour histogram vs cached reference images')}
+        ${row.mrz_verdict ? scoreCard('MRZ validation', null, row.mrz_verdict, 'ICAO 9303 checksum validation (passport only)') : ''}
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <h3>OCR extraction quality</h3>
+      <div class="field-grid">
+        <div class="field-card"><div class="label">Words detected</div><div class="value">${wordCount ?? '—'}</div></div>
+      </div>
+      ${sources ? `
+        <div class="field-grid" style="margin-top:12px">
+          ${Object.entries(sources).map(([f, src]) => `
+            <div class="field-card">
+              <div class="label">${escapeHtml(f.replace(/_/g, ' '))}</div>
+              <div class="value"><span class="badge ${src === 'label' ? 'green' : 'amber'}">${src === 'label' ? 'Label match' : 'Regex guess'}</span></div>
+            </div>
+          `).join('')}
+        </div>` : `<div class="admin-note" style="margin-top:12px">Per-field source (label match vs regex guess) not recorded for this verification.</div>`}
     </div>
   `;
 }
@@ -280,6 +430,42 @@ function renderPep(row) {
   `;
 }
 
+// ── Skeleton ─────────────────────────────────────────────────────────────
+
+function skeletonFieldGrid(n = 6) {
+  return `<div class="field-grid">${Array.from({ length: n }, () => `
+    <div class="field-card skel-field-card">
+      <div class="skel skel-label"></div>
+      <div class="skel skel-text"></div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function skeletonHeading(width = 140) {
+  return `<span class="skel skel-text short" style="width:${width}px;display:inline-block"></span>`;
+}
+
+function renderSkeleton() {
+  document.getElementById('case-title').innerHTML = skeletonHeading(180);
+  document.getElementById('case-sub').innerHTML = skeletonHeading(240);
+
+  panels.overview.innerHTML = `
+    <div class="admin-panel"><h3>${skeletonHeading(90)}</h3>${skeletonFieldGrid(6)}</div>
+    <div class="admin-panel"><h3>${skeletonHeading(160)}</h3>${skeletonFieldGrid(7)}</div>
+    <div class="admin-panel"><h3>${skeletonHeading(140)}</h3>
+      <div class="image-grid">${Array.from({ length: 3 }, () => `<figure><div class="skel skel-image"></div></figure>`).join('')}</div>
+    </div>
+  `;
+  panels.scores.innerHTML = `
+    <div class="admin-panel"><h3>${skeletonHeading(150)}</h3>${skeletonFieldGrid(4)}</div>
+    <div class="admin-panel"><h3>${skeletonHeading(180)}</h3>${skeletonFieldGrid(3)}</div>
+  `;
+  panels.mrz.innerHTML = `<div class="admin-panel"><h3>${skeletonHeading(220)}</h3><div class="skel" style="height:80px;border-radius:10px"></div></div>`;
+  panels.cross.innerHTML = `<div class="admin-panel">${skeletonFieldGrid(5)}</div>`;
+  panels.forensics.innerHTML = `<div class="admin-panel"><h3>${skeletonHeading(80)}</h3><span class="skel skel-badge"></span></div><div class="admin-panel">${skeletonFieldGrid(6)}</div>`;
+  panels.pep.innerHTML = `<div class="admin-panel">${skeletonFieldGrid(2)}</div>`;
+}
+
 // ── Load ─────────────────────────────────────────────────────────────────
 
 async function load() {
@@ -287,6 +473,7 @@ async function load() {
     document.getElementById('case-sub').textContent = 'No verification id in URL';
     return;
   }
+  renderSkeleton();
   let row;
   try {
     const resp = await adminFetch(`/verifications/${id}`);
@@ -300,11 +487,14 @@ async function load() {
     return; // adminFetch already redirected on 401
   }
 
+  currentRow = row;
   document.getElementById('case-title').textContent = `Verification #${row.id}`;
   document.getElementById('case-sub').textContent =
     `${row.country || '—'} · ${(row.doc_type || '—').replace(/_/g, ' ')} · ${fmtDate(row.created_at)}`;
 
+  renderReviewStatus(row);
   renderOverview(row);
+  renderScores(row);
   renderMrz(row);
   renderCross(row);
   renderForensics(row);

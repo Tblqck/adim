@@ -14,11 +14,20 @@
         <h1 id="case-title">Verification #—</h1>
         <div class="sub" id="case-sub">Loading…</div>
       </div>
-      <a class="admin-btn" href="list">← Back to list</a>
+      <div class="review-actions">
+        <span class="badge" id="review-status" style="display:none"></span>
+        <input type="text" id="reviewer-name" placeholder="Your name" style="width:120px">
+        <button class="admin-btn" id="edit-btn">Edit values</button>
+        <button class="admin-btn primary" id="save-btn" style="display:none">Save changes</button>
+        <button class="admin-btn" id="reject-btn" style="border-color:rgba(255,85,117,0.4);color:#ff5575">Reject</button>
+        <button class="admin-btn primary" id="approve-btn">Approve</button>
+        <a class="admin-btn" href="list">← Back</a>
+      </div>
     </div>
 
     <div class="admin-tabbar" id="tabbar">
       <div class="admin-tab active" data-tab="overview">Overview</div>
+      <div class="admin-tab" data-tab="scores">Model Scores</div>
       <div class="admin-tab" data-tab="mrz">MRZ Checksums &amp; Validation</div>
       <div class="admin-tab" data-tab="cross">Printed vs MRZ Cross-Check</div>
       <div class="admin-tab" data-tab="forensics">Forensics &amp; EXIF Check</div>
@@ -26,6 +35,7 @@
     </div>
 
     <div class="tab-panel" data-panel="overview"></div>
+    <div class="tab-panel" data-panel="scores" style="display:none"></div>
     <div class="tab-panel" data-panel="mrz" style="display:none"></div>
     <div class="tab-panel" data-panel="cross" style="display:none"></div>
     <div class="tab-panel" data-panel="forensics" style="display:none"></div>

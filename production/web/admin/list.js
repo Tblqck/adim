@@ -25,6 +25,15 @@ function currentFilters() {
   return f;
 }
 
+function renderSkeletonRows(count = 8) {
+  const cols = 6;
+  rowsEl.innerHTML = Array.from({ length: count }, () => `
+    <tr class="skel-row">
+      ${Array.from({ length: cols }, () => `<td><span class="skel skel-text medium"></span></td>`).join('')}
+    </tr>
+  `).join('');
+}
+
 async function loadPage(page = 1) {
   state.page = page;
   const params = new URLSearchParams({
@@ -33,8 +42,9 @@ async function loadPage(page = 1) {
     ...currentFilters(),
   });
 
-  rowsEl.innerHTML = '';
+  renderSkeletonRows();
   emptyEl.style.display = 'none';
+  totalEl.innerHTML = `<span class="skel skel-text short" style="height:0.85em"></span>`;
 
   let data;
   try {
@@ -52,6 +62,8 @@ async function loadPage(page = 1) {
   state.total = data.total || 0;
   totalEl.textContent = `${state.total} verification${state.total === 1 ? '' : 's'}`;
   pageEl.textContent = `Page ${page} of ${Math.max(1, Math.ceil(state.total / PAGE_SIZE))}`;
+
+  rowsEl.innerHTML = '';
 
   if (!data.items || data.items.length === 0) {
     emptyEl.style.display = 'block';
