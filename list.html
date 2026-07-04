@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <title>Admin · Verifications</title>
+</head>
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div>
+        <h1>Verifications</h1>
+        <div class="sub" id="total-count">Loading…</div>
+      </div>
+      <button class="admin-btn" id="logout-btn">Sign out</button>
+    </div>
+
+    <div class="admin-filters">
+      <select id="f-verified">
+        <option value="">Any status</option>
+        <option value="true">Verified</option>
+        <option value="false">Not verified</option>
+      </select>
+      <select id="f-doc-type">
+        <option value="">Any document</option>
+        <option value="passport">Passport</option>
+        <option value="national_id">National ID</option>
+        <option value="drivers_license">Driver's License</option>
+        <option value="residence_permit">Residence Permit</option>
+      </select>
+      <input type="text" id="f-country" placeholder="Country (e.g. NG)" maxlength="2" style="max-width:110px">
+      <input type="date" id="f-date-from">
+      <input type="date" id="f-date-to">
+      <input type="text" id="f-q" placeholder="Search name, ID number, user ref…">
+      <button class="admin-btn primary" id="apply-btn">Filter</button>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Name</th>
+            <th>Country</th>
+            <th>Document</th>
+            <th>Verdict</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="admin-empty" id="empty" style="display:none">No verifications found.</div>
+    </div>
+
+    <div class="admin-pagination">
+      <button class="admin-btn" id="prev-btn">‹ Prev</button>
+      <span id="page-label">Page 1</span>
+      <button class="admin-btn" id="next-btn">Next ›</button>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="list.js"></script>
+</body>
+</html>

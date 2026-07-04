@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <title>Admin · Sign in</title>
+</head>
+<body class="admin">
+  <div class="admin-login-wrap">
+    <form class="admin-login-card" id="login-form">
+      <h1>KYC Admin</h1>
+      <p>Sign in to review verifications.</p>
+      <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" autofocus required>
+      <div class="error" id="error"></div>
+      <button type="submit" class="admin-btn primary" style="width:100%">Sign in</button>
+    </form>
+  </div>
+
+  <script>
+    const form  = document.getElementById('login-form');
+    const error = document.getElementById('error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      error.textContent = '';
+      const password = document.getElementById('password').value;
+      try {
+        const resp = await fetch('/api/v1/admin/login', {
+          method: 'POST',
+          body: new URLSearchParams({ password }),
+        });
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}));
+          error.textContent = body.detail || 'Incorrect password';
+          return;
+        }
+        location.href = 'list';
+      } catch (err) {
+        error.textContent = 'Network error — try again';
+      }
+    });
+  </script>
+</body>
+</html>

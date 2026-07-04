@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <title>Admin · Verification Detail</title>
+</head>
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div>
+        <h1 id="case-title">Verification #—</h1>
+        <div class="sub" id="case-sub">Loading…</div>
+      </div>
+      <a class="admin-btn" href="list">← Back to list</a>
+    </div>
+
+    <div class="admin-tabbar" id="tabbar">
+      <div class="admin-tab active" data-tab="overview">Overview</div>
+      <div class="admin-tab" data-tab="mrz">MRZ Checksums &amp; Validation</div>
+      <div class="admin-tab" data-tab="cross">Printed vs MRZ Cross-Check</div>
+      <div class="admin-tab" data-tab="forensics">Forensics &amp; EXIF Check</div>
+      <div class="admin-tab" data-tab="pep">PEP &amp; Sanctions Checklist</div>
+    </div>
+
+    <div class="tab-panel" data-panel="overview"></div>
+    <div class="tab-panel" data-panel="mrz" style="display:none"></div>
+    <div class="tab-panel" data-panel="cross" style="display:none"></div>
+    <div class="tab-panel" data-panel="forensics" style="display:none"></div>
+    <div class="tab-panel" data-panel="pep" style="display:none"></div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="detail.js"></script>
+</body>
+</html>
