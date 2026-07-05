@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: adim-admin
+    runtime: docker
+    envVars:
+      - key: AWS_ADMIN_API_BASE
+        sync: false

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <title>Admin · PEP &amp; Sanctions Check</title>
+</head>
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div>
+        <h1>PEP &amp; Sanctions Check</h1>
+        <div class="sub">Screen a name against global PEP and sanctions lists — no document required</div>
+      </div>
+      <div class="review-actions">
+        <a class="admin-btn" href="list">Verifications</a>
+        <a class="admin-btn" href="document-check">Document Authenticity Check</a>
+        <a class="admin-btn" href="generate-link">Generate Link</a>
+        <button class="admin-btn" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <h3>Search</h3>
+      <div class="field-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+        <div class="field-card">
+          <div class="label">First name</div>
+          <input type="text" id="s-given-names" class="edit-input" placeholder="Nikos">
+        </div>
+        <div class="field-card">
+          <div class="label">Surname</div>
+          <input type="text" id="s-surname" class="edit-input" placeholder="Christodoulides">
+        </div>
+        <div class="field-card">
+          <div class="label">Date of birth (optional)</div>
+          <input type="date" id="s-dob" class="edit-input">
+        </div>
+        <div class="field-card">
+          <div class="label">Nationality (optional)</div>
+          <input type="text" id="s-nationality" class="edit-input" placeholder="Cyprus">
+        </div>
+        <div class="field-card">
+          <div class="label">Searched by</div>
+          <input type="text" id="s-searched-by" class="edit-input" placeholder="Your name">
+        </div>
+      </div>
+      <button class="admin-btn primary" id="search-btn" style="margin-top:16px">Run screen</button>
+      <div class="admin-note" id="search-error" style="display:none;margin-top:14px;background:rgba(255,85,117,0.08);border-color:rgba(255,85,117,0.3);color:#ff5575"></div>
+    </div>
+
+    <div id="result-wrap"></div>
+  </div>
+
+  <script src="/scripts/countries.js"></script>
+  <script src="admin.js"></script>
+  <script src="screen.js"></script>
+</body>
+</html>

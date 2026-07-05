@@ -82,15 +82,48 @@ function collectCorrections() {
   return corrections;
 }
 
+// ── Inline error banner + field shake/highlight ─────────────────────────
+
+function clearFormError() {
+  const banner = document.getElementById('detail-error');
+  banner.classList.remove('show');
+  banner.textContent = '';
+}
+
+function shakeElement(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth; // force reflow so the animation restarts on repeat errors
+  el.classList.add('shake');
+  el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
+}
+
+function showFormError(message, highlightId) {
+  const banner = document.getElementById('detail-error');
+  banner.textContent = message;
+  banner.classList.add('show');
+  if (highlightId) {
+    const el = document.getElementById(highlightId);
+    el.classList.add('input-error');
+    shakeElement(el);
+    el.focus();
+  }
+}
+
+document.getElementById('reviewer-name').addEventListener('input', (e) => {
+  e.target.classList.remove('input-error');
+  clearFormError();
+});
+
 async function submitReview(verified) {
+  clearFormError();
   const reviewedBy = document.getElementById('reviewer-name').value.trim();
   if (!reviewedBy) {
-    alert('Enter your name in "Reviewed by" before saving/approving/rejecting.');
+    showFormError('Enter your name in "Reviewed by" before saving/approving/rejecting.', 'reviewer-name');
     return;
   }
   const corrected_fields = editing ? collectCorrections() : undefined;
   if (verified === undefined && (!corrected_fields || !Object.keys(corrected_fields).length)) {
-    alert('No changed values to save.');
+    showFormError('No changed values to save.');
     return;
   }
 
@@ -104,7 +137,7 @@ async function submitReview(verified) {
   });
   if (!resp.ok) {
     const respBody = await resp.json().catch(() => ({}));
-    alert(respBody.detail || `Update failed (${resp.status})`);
+    showFormError(respBody.detail || `Update failed (${resp.status})`);
     return;
   }
   editing = false;
@@ -175,15 +208,89 @@ function renderOverview(row) {
     </div>
 
     <div class="admin-panel">
-      <h3>Captured images</h3>
+      <h3>Captured images
+        ${imageCards.length > 1 ? `<button class="admin-btn" id="compare-toggle-btn" style="margin-left:10px;padding:4px 10px;font-size:0.72rem;vertical-align:middle">${compareMode ? 'Cancel compare' : 'Compare frames'}</button>` : ''}
+      </h3>
+      ${compareMode ? `<div class="admin-note" style="margin-top:0">Click two frames to view them side by side. Click either again to swap the selection.</div>` : ''}
       ${imageCards.length
         ? `<div class="image-grid">${imageCards.map(([label, url]) => `
-            <figure><img src="${escapeHtml(url)}" alt="${escapeHtml(label)}" loading="lazy"><figcaption>${escapeHtml(label)}</figcaption></figure>
+            <figure data-lightbox-url="${escapeHtml(url)}" data-lightbox-label="${escapeHtml(label)}" class="${selectedForCompare.some(f => f.url === url) ? 'selected' : ''}">
+              <img src="${escapeHtml(url)}" alt="${escapeHtml(label)}" loading="lazy"><figcaption>${escapeHtml(label)}</figcaption>
+            </figure>
           `).join('')}</div>`
         : `<div class="admin-note">No images stored for this verification (Supabase Storage may not be configured, or upload is still in progress).</div>`}
     </div>
   `;
 }
+
+// ── Image lightbox + frame compare ───────────────────────────────────────
+
+let compareMode = false;
+let selectedForCompare = []; // { url, label, el }
+
+function resetCompareSelection() {
+  selectedForCompare.forEach(f => f.el && f.el.classList.remove('selected'));
+  selectedForCompare = [];
+}
+
+function openLightbox(frames) {
+  document.getElementById('img-modal-content').innerHTML = frames.map(f => `
+    <div class="img-modal-pane">
+      <img src="${escapeHtml(f.url)}" alt="${escapeHtml(f.label)}">
+      <figcaption>${escapeHtml(f.label)}</figcaption>
+    </div>
+  `).join('');
+  document.getElementById('img-modal').classList.add('show');
+}
+
+function closeLightbox() {
+  document.getElementById('img-modal').classList.remove('show');
+  document.getElementById('img-modal-content').innerHTML = '';
+}
+
+function toggleCompareSelection(url, label, el) {
+  const idx = selectedForCompare.findIndex(f => f.el === el);
+  if (idx >= 0) {
+    selectedForCompare.splice(idx, 1);
+    el.classList.remove('selected');
+    return;
+  }
+  if (selectedForCompare.length >= 2) {
+    const removed = selectedForCompare.shift();
+    removed.el.classList.remove('selected');
+  }
+  selectedForCompare.push({ url, label, el });
+  el.classList.add('selected');
+  if (selectedForCompare.length === 2) {
+    openLightbox(selectedForCompare);
+  }
+}
+
+panels.overview.addEventListener('click', (e) => {
+  if (e.target.closest('#compare-toggle-btn')) {
+    compareMode = !compareMode;
+    resetCompareSelection();
+    if (currentRow) renderOverview(currentRow);
+    return;
+  }
+  const fig = e.target.closest('[data-lightbox-url]');
+  if (!fig) return;
+  const url   = fig.dataset.lightboxUrl;
+  const label = fig.dataset.lightboxLabel;
+  if (compareMode) {
+    toggleCompareSelection(url, label, fig);
+  } else {
+    openLightbox([{ url, label }]);
+  }
+});
+
+document.getElementById('img-modal-close').addEventListener('click', closeLightbox);
+document.getElementById('img-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'img-modal' || e.target.classList.contains('img-modal-backdrop')) closeLightbox();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeLightbox();
+});
 
 // ── Model Scores tab ─────────────────────────────────────────────────────
 

@@ -18,12 +18,42 @@ function currentFilters() {
 
   if (verified) f.verified  = verified;
   if (docType)  f.doc_type  = docType;
-  if (country)  f.country   = country.toUpperCase();
+  // Only a resolved 2-letter code is a valid filter value — ignore partial
+  // text the admin typed but never picked from the country dropdown.
+  if (country && country.length === 2) f.country = country.toUpperCase();
   if (dateFrom) f.date_from = dateFrom;
   if (dateTo)   f.date_to   = dateTo;
   if (q)        f.q         = q;
   return f;
 }
+
+attachCountryAutocomplete(document.getElementById('f-country'));
+
+// Name/user search typeahead — as the admin types, show matching people
+// from the same search the "Filter" button already uses, and let a click
+// jump straight to that verification's detail page.
+attachAutocomplete(document.getElementById('f-q'), {
+  minChars: 2,
+  debounceMs: 200,
+  fetchItems: async (q) => {
+    const params = new URLSearchParams({ page: '1', page_size: '8', q });
+    try {
+      const resp = await adminFetch(`/verifications?${params}`);
+      if (!resp.ok) return [];
+      const data = await resp.json();
+      return data.items || [];
+    } catch (_) {
+      return [];
+    }
+  },
+  renderItem: (row, q) => {
+    const extracted = (row.extracted_id_data && row.extracted_id_data[0]) || {};
+    const name = extracted.full_name || row.user_ref || 'Unknown';
+    const meta = [row.country, (row.doc_type || '').replace(/_/g, ' '), fmtDate(row.created_at)].filter(Boolean).join(' · ');
+    return `<span class="ac-item-main">${highlightMatch(name, q)}</span><span class="ac-item-sub">${escapeHtml(meta)}</span>`;
+  },
+  onSelect: (row) => { location.href = `detail?id=${row.id}`; },
+});
 
 function renderSkeletonRows(count = 8) {
   const cols = 6;

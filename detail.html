@@ -25,6 +25,8 @@
       </div>
     </div>
 
+    <div class="admin-error-banner" id="detail-error"></div>
+
     <div class="admin-tabbar" id="tabbar">
       <div class="admin-tab active" data-tab="overview">Overview</div>
       <div class="admin-tab" data-tab="scores">Model Scores</div>
@@ -40,6 +42,12 @@
     <div class="tab-panel" data-panel="cross" style="display:none"></div>
     <div class="tab-panel" data-panel="forensics" style="display:none"></div>
     <div class="tab-panel" data-panel="pep" style="display:none"></div>
+  </div>
+
+  <div class="img-modal" id="img-modal">
+    <div class="img-modal-backdrop"></div>
+    <div class="img-modal-content" id="img-modal-content"></div>
+    <button class="img-modal-close" id="img-modal-close">✕</button>
   </div>
 
   <script src="admin.js"></script>

@@ -14,7 +14,12 @@
         <h1>Verifications</h1>
         <div class="sub" id="total-count">Loading…</div>
       </div>
-      <button class="admin-btn" id="logout-btn">Sign out</button>
+      <div class="review-actions">
+        <a class="admin-btn" href="document-check">Document Authenticity Check</a>
+        <a class="admin-btn" href="screen">PEP &amp; Sanctions Check</a>
+        <a class="admin-btn" href="generate-link">Generate Link</a>
+        <button class="admin-btn" id="logout-btn">Sign out</button>
+      </div>
     </div>
 
     <div class="admin-filters">
@@ -30,7 +35,7 @@
         <option value="drivers_license">Driver's License</option>
         <option value="residence_permit">Residence Permit</option>
       </select>
-      <input type="text" id="f-country" placeholder="Country (e.g. NG)" maxlength="2" style="max-width:110px">
+      <input type="text" id="f-country" placeholder="Country" style="max-width:170px">
       <input type="date" id="f-date-from">
       <input type="date" id="f-date-to">
       <input type="text" id="f-q" placeholder="Search name, ID number, user ref…">
@@ -61,6 +66,7 @@
     </div>
   </div>
 
+  <script src="/scripts/countries.js"></script>
   <script src="admin.js"></script>
   <script src="list.js"></script>
 </body>
