@@ -1,6 +1,7 @@
 const resultWrap = document.getElementById('result-wrap');
 const checkBtn    = document.getElementById('check-btn');
 const errorBox    = document.getElementById('check-error');
+let   selectedFirmId = null;
 
 function renderDocumentPanel(doc) {
   if (!doc) return '';
@@ -152,6 +153,7 @@ async function runCheck() {
   form.append('id_image', frontFile);
   if (backFile) form.append('id_image_back', backFile);
   if (checkedBy) form.append('checked_by', checkedBy);
+  if (selectedFirmId) form.append('firm_id', selectedFirmId);
 
   try {
     const resp = await adminFetch('/document-check', { method: 'POST', body: form });
@@ -173,6 +175,7 @@ async function runCheck() {
 }
 
 attachCountryAutocomplete(document.getElementById('d-country'));
+renderFirmFilter('firm-filter-slot', (firmId) => { selectedFirmId = firmId; });
 
 checkBtn.addEventListener('click', runCheck);
 document.getElementById('logout-btn').addEventListener('click', async () => {

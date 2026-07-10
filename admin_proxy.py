@@ -9,13 +9,27 @@ dependency and stays deployable on a free/low-memory tier.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import httpx
 from fastapi import APIRouter, Request, Response
 
 router = APIRouter()
 
-AWS_ADMIN_BASE = os.getenv("AWS_ADMIN_API_BASE", "http://18.185.59.156/api/v1/admin").rstrip("/")
+AWS_ADMIN_BASE = os.getenv("AWS_ADMIN_API_BASE", "https://18.185.59.156/api/v1/admin").rstrip("/")
+
+# The AWS box has no CA-trusted cert (no domain name to issue one against),
+# so this pins its actual self-signed cert instead of disabling verification
+# outright — that still defeats both passive eavesdropping AND an active
+# MITM presenting a different certificate, unlike verify=False.
+_PINNED_CERT = Path(__file__).parent / "aws_admin_cert.pem"
+_VERIFY = str(_PINNED_CERT) if _PINNED_CERT.exists() else True
+
+if AWS_ADMIN_BASE.startswith("http://") and "127.0.0.1" not in AWS_ADMIN_BASE and "localhost" not in AWS_ADMIN_BASE:
+    raise RuntimeError(
+        "AWS_ADMIN_API_BASE is plain HTTP against a non-local host — this would relay "
+        "the admin password and session cookie unencrypted. Use https:// (see aws_admin_cert.pem)."
+    )
 
 # Headers that must not be copied verbatim between hops.
 _HOP_BY_HOP = {
@@ -33,7 +47,7 @@ async def proxy_admin(path: str, request: Request):
         k: v for k, v in request.headers.items() if k.lower() not in _HOP_BY_HOP
     }
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
+    async with httpx.AsyncClient(timeout=60.0, verify=_VERIFY) as client:
         upstream = await client.request(
             request.method,
             url,

@@ -12,6 +12,7 @@
     <form class="admin-login-card" id="login-form">
       <h1>KYC Admin</h1>
       <p>Sign in to review verifications.</p>
+      <input type="text" id="firm" name="firm" placeholder="Firm (leave blank for admin)" autocomplete="organization">
       <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" autofocus required>
       <div class="error" id="error"></div>
       <button type="submit" class="admin-btn primary" style="width:100%">Sign in</button>
@@ -26,16 +27,21 @@
       e.preventDefault();
       error.textContent = '';
       const password = document.getElementById('password').value;
+      const firm     = document.getElementById('firm').value.trim();
       try {
+        const body = { password };
+        if (firm) body.firm = firm;
         const resp = await fetch('/api/v1/admin/login', {
           method: 'POST',
-          body: new URLSearchParams({ password }),
+          body: new URLSearchParams(body),
         });
         if (!resp.ok) {
-          const body = await resp.json().catch(() => ({}));
-          error.textContent = body.detail || 'Incorrect password';
+          const respBody = await resp.json().catch(() => ({}));
+          error.textContent = respBody.detail || 'Incorrect password';
           return;
         }
+        const result = await resp.json();
+        sessionStorage.setItem('kyc_super_admin', result.super_admin ? '1' : '');
         location.href = 'list';
       } catch (err) {
         error.textContent = 'Network error — try again';

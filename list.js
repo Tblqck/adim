@@ -1,6 +1,6 @@
 const PAGE_SIZE = 25;
 
-const state = { page: 1, total: 0 };
+const state = { page: 1, total: 0, firmId: null };
 
 const rowsEl   = document.getElementById('rows');
 const emptyEl  = document.getElementById('empty');
@@ -24,6 +24,7 @@ function currentFilters() {
   if (dateFrom) f.date_from = dateFrom;
   if (dateTo)   f.date_to   = dateTo;
   if (q)        f.q         = q;
+  if (state.firmId) f.firm_id = state.firmId;
   return f;
 }
 
@@ -131,5 +132,7 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   await adminFetch('/logout', { method: 'POST' }).catch(() => {});
   location.href = 'login';
 });
+
+renderFirmFilter('firm-filter-slot', (firmId) => { state.firmId = firmId; loadPage(1); });
 
 loadPage(1);

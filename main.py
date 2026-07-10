@@ -72,7 +72,8 @@ if _COUNTRIES_JS.exists():
 # to heuristic caching for plain FileResponse output, and different browsers
 # hang on to stale HTML/JS/CSS for different lengths of time, so a new
 # deploy looks "live" in some browsers and stale in others.
-for _asset in ("admin.css", "admin.js", "list.js", "detail.js", "screen.js", "document-check.js"):
+for _asset in ("admin.css", "admin.js", "list.js", "detail.js", "screen.js", "document-check.js",
+               "generate-link.js", "kyb.js"):
     _f = _HERE / _asset
     if _f.exists():
         def _make_admin_asset(p: Path):
@@ -82,7 +83,7 @@ for _asset in ("admin.css", "admin.js", "list.js", "detail.js", "screen.js", "do
             return _route
         app.get(f"/admin/{_asset}", include_in_schema=False)(_make_admin_asset(_f))
 
-for _page in ("login", "list", "detail", "screen", "document-check", "generate-link"):
+for _page in ("login", "list", "detail", "screen", "document-check", "generate-link", "kyb"):
     _html = _HERE / f"{_page}.html"
     if _html.exists():
         def _make_admin_page(p: Path):

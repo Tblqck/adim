@@ -14,6 +14,42 @@ async function adminFetch(path, opts = {}) {
   return resp;
 }
 
+// ── Firm filter (super-admin only) ──────────────────────────────────────────
+// A firm-scoped login is already confined server-side and never sees this —
+// there's nothing to pick. A super-admin login can see everything by
+// default, with this dropdown to narrow to one firm. `kyc_super_admin` is
+// set in sessionStorage by login.html right after a successful login.
+
+async function renderFirmFilter(containerId, onChange) {
+  if (sessionStorage.getItem('kyc_super_admin') !== '1') return;
+
+  let firms = [];
+  try {
+    const resp = await adminFetch('/firms');
+    if (!resp.ok) return;
+    firms = (await resp.json()).items || [];
+  } catch (_) {
+    return;
+  }
+  if (!firms.length) return;
+
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'field-card';
+  wrap.style.marginBottom = '16px';
+  wrap.innerHTML = `
+    <div class="label">Firm</div>
+    <select id="firm-filter-select" class="edit-input">
+      <option value="">All firms</option>
+      ${firms.map(f => `<option value="${f.id}">${escapeHtml(f.name)}</option>`).join('')}
+    </select>
+  `;
+  container.prepend(wrap);
+  wrap.querySelector('select').addEventListener('change', (e) => onChange(e.target.value || null));
+}
+
 function verdictBadgeClass(verified, verdict) {
   if (verified === true) return 'green';
   if (verified === false) return 'red';
@@ -33,6 +69,96 @@ function fmtDate(iso) {
 
 function fmtPct(v) {
   return v == null ? '—' : `${Math.round(v * 100)}%`;
+}
+
+// ── OpenSanctions topic/country label translation ──────────────────────────
+// Raw API output is jargon (topic codes, ISO country codes, dataset IDs)
+// aimed at compliance software, not the person reading the admin dashboard.
+// These turn that into plain language for the PEP/KYB result cards.
+
+const TOPIC_LABELS = {
+  'sanction':         'Sanctioned',
+  'sanction.linked':  'Linked to a Sanctioned Entity',
+  'sanction.counter': 'Counter-Sanctioned',
+  'role.pep':         'Politically Exposed Person',
+  'role.rca':         'Close Associate of a PEP',
+  'role.pol':         'Political Office Holder',
+  'role.oligarch':    'Oligarch',
+  'poi':              'Adverse Media',
+  'debarment':        'Debarred From Public Contracts',
+  'corp.disqual':     'Disqualified Company Director',
+  'corp.public':      'Publicly Listed Company',
+  'gov.soe':          'State-Owned Enterprise',
+  'fin.bank':         'Bank / Financial Institution',
+  'crime':            'Criminal Association',
+  'crime.boss':       'Organized Crime',
+  'crime.fin':        'Financial Crime',
+  'crime.fraud':      'Fraud',
+  'crime.terror':     'Terrorism',
+  'crime.theft':      'Theft',
+  'crime.traffick':   'Trafficking',
+  'crime.war':        'War Crimes',
+  'export.control':   'Export-Controlled',
+  'export.risk':      'Export Control Risk',
+  'reg.action':       'Regulatory Action Taken',
+  'reg.warn':         'Regulatory Warning',
+  'wanted':           'Wanted by Law Enforcement',
+  'asset.frozen':     'Assets Frozen',
+};
+
+function humanizeTopic(code) {
+  if (TOPIC_LABELS[code]) return TOPIC_LABELS[code];
+  // Unknown code — fall back to a readable guess rather than showing raw dots/underscores.
+  return code.replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function countryLabel(code2) {
+  if (!code2) return null;
+  const c = (window.COUNTRIES || []).find(c => c.code2.toLowerCase() === code2.toLowerCase());
+  const flag = window.countryFlag ? window.countryFlag(code2) : '';
+  return c ? `${flag} ${c.name}` : code2.toUpperCase();
+}
+
+// Shared PEP/KYB match profile card — factFields is an array of
+// {label, value} pairs the caller precomputes (person vs company have
+// different relevant facts); falsy values are dropped automatically.
+function renderMatchCard(m, factFields) {
+  const badges = (m.topics || []).map(t =>
+    `<span class="badge blue">${escapeHtml(humanizeTopic(t))}</span>`
+  ).join('');
+
+  const facts = factFields.filter(f => f.value).map(f => `
+    <div class="field-card"><div class="label">${escapeHtml(f.label)}</div><div class="value">${escapeHtml(f.value)}</div></div>
+  `).join('');
+
+  const sourceUrls = m.source_urls || [];
+  const links = sourceUrls.map((u, i) =>
+    `<a class="admin-btn" href="${escapeHtml(u)}" target="_blank" rel="noopener">Verify source${sourceUrls.length > 1 ? ' ' + (i + 1) : ''}</a>`
+  );
+  if (m.wikipedia_url) {
+    links.push(`<a class="admin-btn" href="${escapeHtml(m.wikipedia_url)}" target="_blank" rel="noopener">Wikipedia</a>`);
+  }
+
+  return `
+    <div class="match-card">
+      <div class="match-header">
+        <div class="match-name">${escapeHtml(m.name)}</div>
+        <div class="match-score">${fmtPct(m.score)} match</div>
+      </div>
+      <div class="match-badges">${badges}</div>
+      ${facts ? `<div class="field-grid" style="margin-top:0">${facts}</div>` : ''}
+      ${m.notes ? `<div class="match-notes" style="margin-top:12px">${escapeHtml(m.notes)}</div>` : ''}
+      ${links.length ? `<div class="match-links">${links.join('')}</div>` : ''}
+      <details class="match-raw">
+        <summary>Technical details — ${(m.datasets || []).length} source lists</summary>
+        <div class="match-raw-body">
+          <strong>Source lists:</strong> ${escapeHtml((m.datasets || []).join(', ') || '—')}<br>
+          <strong>Topic codes:</strong> ${escapeHtml((m.topics || []).join(', ') || '—')}
+          ${(m.program_ids || []).length ? `<br><strong>Sanctions program codes:</strong> ${escapeHtml(m.program_ids.join(', '))}` : ''}
+        </div>
+      </details>
+    </div>
+  `;
 }
 
 function escapeHtml(s) {

@@ -621,3 +621,63 @@
   padding: 10px 12px;
   font-size: 0.82rem;
 }
+
+/* ── Match profile cards (PEP / KYB result matches) ──────────────────────── */
+
+.match-card {
+  background: var(--a-panel-2);
+  border: 1px solid var(--a-border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.match-card:last-child { margin-bottom: 0; }
+
+.match-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.match-header .match-name { font-size: 1.05rem; font-weight: 700; }
+.match-header .match-score { font-size: 0.82rem; color: var(--a-muted); white-space: nowrap; }
+
+.match-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.match-notes {
+  font-size: 0.85rem;
+  color: var(--a-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.match-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.match-links a.admin-btn { font-size: 0.78rem; padding: 6px 12px; }
+
+.match-raw {
+  margin-top: 10px;
+}
+.match-raw summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: var(--a-muted);
+}
+.match-raw summary:hover { color: var(--a-accent-2); }
+.match-raw .match-raw-body {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--a-muted);
+  line-height: 1.6;
+  word-break: break-word;
+}

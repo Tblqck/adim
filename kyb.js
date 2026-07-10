@@ -12,16 +12,20 @@ function renderScreenResult(p) {
   `).join('');
 
   const matches = (p.matches || []).map(m => renderMatchCard(m, [
-    { label: 'Country',        value: countryLabel(m.country) },
-    { label: 'Position / role', value: m.position },
-    { label: 'Date of birth',  value: m.birth_date },
+    { label: 'Jurisdiction',         value: countryLabel(m.jurisdiction || m.country) },
+    { label: 'Entity type',          value: m.entity_type },
+    { label: 'Status',               value: m.status },
+    { label: 'Registration number',  value: m.registration_number },
+    { label: 'Incorporated',         value: m.incorporation_date },
+    { label: 'Website',              value: m.website },
+    { label: 'Address',              value: m.address },
   ])).join('');
 
   resultWrap.innerHTML = `
     <div class="admin-panel">
       <h3>Result</h3>
       <div class="field-grid">
-        <div class="field-card"><div class="label">Subject name</div><div class="value">${escapeHtml(p.subject_name || '—')}</div></div>
+        <div class="field-card"><div class="label">Subject company</div><div class="value">${escapeHtml(p.subject_name || '—')}</div></div>
         <div class="field-card"><div class="label">Risk classification</div><div class="value"><span class="badge ${bannerClass === 'clean' ? 'green' : bannerClass === 'warn' ? 'amber' : 'gray'}">${escapeHtml(p.risk_classification)}</span></div></div>
       </div>
       <div class="pep-banner ${bannerClass}">
@@ -41,19 +45,18 @@ function renderScreenResult(p) {
 }
 
 async function runScreen() {
-  const given_names = document.getElementById('s-given-names').value.trim();
-  const surname      = document.getElementById('s-surname').value.trim();
-  const date_of_birth = document.getElementById('s-dob').value || null;
-  const nationalityRaw = document.getElementById('s-nationality').value.trim();
+  const company_name = document.getElementById('k-company-name').value.trim();
+  const jurisdictionRaw = document.getElementById('k-jurisdiction').value.trim();
   // Only a resolved 2-letter code is valid for the audit-log FK — a
   // half-typed country name the admin never picked from the dropdown is
   // still fine to drop, the screen itself doesn't require it.
-  const nationality   = /^[A-Za-z]{2}$/.test(nationalityRaw) ? nationalityRaw.toUpperCase() : null;
-  const searched_by   = document.getElementById('s-searched-by').value.trim() || null;
+  const jurisdiction = /^[A-Za-z]{2}$/.test(jurisdictionRaw) ? jurisdictionRaw.toUpperCase() : null;
+  const registration_number = document.getElementById('k-registration-number').value.trim() || null;
+  const searched_by  = document.getElementById('k-searched-by').value.trim() || null;
 
   errorBox.style.display = 'none';
-  if (!given_names && !surname) {
-    errorBox.textContent = 'Enter at least a first name or surname.';
+  if (!company_name) {
+    errorBox.textContent = 'Enter a company name.';
     errorBox.style.display = '';
     return;
   }
@@ -65,10 +68,10 @@ async function runScreen() {
   `).join('') + '</div>'}</div>`;
 
   try {
-    const resp = await adminFetch('/screen', {
+    const resp = await adminFetch('/screen-company', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ given_names, surname, date_of_birth, nationality, searched_by, firm_id: selectedFirmId }),
+      body: JSON.stringify({ company_name, jurisdiction, registration_number, searched_by, firm_id: selectedFirmId }),
     });
     if (!resp.ok) {
       const body = await resp.json().catch(() => ({}));
@@ -87,7 +90,7 @@ async function runScreen() {
   }
 }
 
-attachCountryAutocomplete(document.getElementById('s-nationality'));
+attachCountryAutocomplete(document.getElementById('k-jurisdiction'));
 renderFirmFilter('firm-filter-slot', (firmId) => { selectedFirmId = firmId; });
 
 searchBtn.addEventListener('click', runScreen);
