@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docs · Two Ways to Integrate</title>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --surface-2: #fbfaf8;
+    --text: #1f2733;
+    --text-muted: #5b6472;
+    --text-faint: #848d99;
+    --accent: #1b3a5c;
+    --accent-soft: #e7edf3;
+    --rule: #dad7cf;
+    --green: #2f7d5d;
+    --green-soft: #e5f2ec;
+    --amber: #8a5f19;
+    --amber-soft: #f7ecd9;
+    --red: #a13a3a;
+    --red-soft: #f6e8e8;
+
+    --serif: Iowan Old Style, "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181d; --surface: #1b2027; --surface-2: #1e242b;
+      --text: #e7e9ec; --text-muted: #9aa3ad; --text-faint: #6f7883;
+      --accent: #86b0de; --accent-soft: #212e3c; --rule: #2a313a;
+      --green: #58b48d; --green-soft: #17261f;
+      --amber: #d6a955; --amber-soft: #2b2416;
+      --red: #e08787; --red-soft: #2c1a1a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181d; --surface: #1b2027; --surface-2: #1e242b;
+    --text: #e7e9ec; --text-muted: #9aa3ad; --text-faint: #6f7883;
+    --accent: #86b0de; --accent-soft: #212e3c; --rule: #2a313a;
+    --green: #58b48d; --green-soft: #17261f;
+    --amber: #d6a955; --amber-soft: #2b2416;
+    --red: #e08787; --red-soft: #2c1a1a;
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f6f3; --surface: #ffffff; --surface-2: #fbfaf8;
+    --text: #1f2733; --text-muted: #5b6472; --text-faint: #848d99;
+    --accent: #1b3a5c; --accent-soft: #e7edf3; --rule: #dad7cf;
+    --green: #2f7d5d; --green-soft: #e5f2ec;
+    --amber: #8a5f19; --amber-soft: #f7ecd9;
+    --red: #a13a3a; --red-soft: #f6e8e8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 860px; margin: 0 auto; padding: 2.4rem 1.5rem 6rem; }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--mono); font-size: 0.8rem; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead {
+    display: flex; flex-direction: column; gap: 0.6rem;
+    padding-bottom: 1.6rem; border-bottom: 2px solid var(--accent); margin-bottom: 1.6rem;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  h1 {
+    font-family: var(--serif); font-size: 2.1rem; font-weight: 600;
+    margin: 0; text-wrap: balance; letter-spacing: -0.01em;
+  }
+  .lede { font-size: 1.05rem; color: var(--text-muted); margin: 1.6rem 0 1.6rem; max-width: 68ch; }
+
+  .account-card {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 1.1rem 1.4rem; margin-bottom: 2.6rem; display: flex; align-items: center;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .account-card .label {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .account-card .name { font-family: var(--serif); font-size: 1.1rem; }
+  .account-card .slug {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--text-muted);
+    background: var(--surface-2); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 0.15rem 0.5rem;
+  }
+
+  /* ── Path comparison cards ─────────────────────────────────────────── */
+  .path-picker {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+    margin-bottom: 3rem;
+  }
+  .path-card {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 1.5rem; display: flex; flex-direction: column; gap: 0.7rem;
+  }
+  .path-card .path-eyebrow {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .path-card h3 { margin: 0; font-family: var(--serif); font-size: 1.2rem; }
+  .path-card p { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
+  .path-card .fit {
+    margin-top: auto; padding-top: 0.8rem; border-top: 1px solid var(--rule);
+    font-size: 0.82rem; color: var(--text-faint);
+  }
+  .path-card .fit strong { color: var(--text); }
+
+  section { margin-bottom: 3.2rem; scroll-margin-top: 1.5rem; }
+  .section-head {
+    display: flex; align-items: baseline; gap: 0.9rem; margin-bottom: 1.2rem;
+    padding-bottom: 0.9rem; border-bottom: 2px solid var(--rule);
+  }
+  .section-letter {
+    font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: var(--accent);
+  }
+  h2 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; margin: 0; text-wrap: balance; }
+  .section-sub { font-size: 0.92rem; color: var(--text-muted); margin-top: 0.2rem; }
+  h3 { font-family: var(--sans); font-size: 0.95rem; font-weight: 700; margin: 1.5rem 0 0.6rem; color: var(--text); }
+
+  p { margin: 0 0 1rem; max-width: 72ch; }
+  p:last-child { margin-bottom: 0; }
+
+  .method-path {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-family: var(--mono); font-size: 0.95rem; margin: 0.2rem 0 1rem;
+  }
+  .method {
+    font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em;
+    padding: 0.2rem 0.55rem; border-radius: 3px; text-transform: uppercase;
+  }
+  .method.get  { background: var(--green-soft); color: var(--green); }
+  .method.post { background: var(--accent-soft); color: var(--accent); }
+
+  ol.steps { padding-left: 1.4rem; margin: 0.6rem 0 1.2rem; display: flex; flex-direction: column; gap: 0.7rem; }
+  ol.steps li { padding-left: 0.3rem; }
+  ol.steps li strong { color: var(--text); }
+
+  ul.plain { list-style: none; padding: 0; margin: 0.6rem 0 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  ul.plain li { padding-left: 1.1rem; position: relative; }
+  ul.plain li::before { content: "—"; position: absolute; left: 0; color: var(--text-faint); }
+
+  .table-wrap { overflow-x: auto; margin: 0.8rem 0 1.2rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.88rem; background: var(--surface); border: 1px solid var(--rule); }
+  th, td { text-align: left; padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); background: var(--surface-2); }
+  tr:last-child td { border-bottom: none; }
+
+  .callout {
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    padding: 1rem 1.2rem; border-radius: 0 4px 4px 0; font-size: 0.95rem; color: var(--text);
+    margin: 1rem 0;
+  }
+  .callout.warn { background: var(--amber-soft); border-left-color: var(--amber); }
+  .callout.good { background: var(--green-soft); border-left-color: var(--green); }
+  .callout p:last-child { margin-bottom: 0; }
+
+  code {
+    font-family: var(--mono); font-size: 0.88em; background: var(--surface-2);
+    border: 1px solid var(--rule); padding: 0.1em 0.4em; border-radius: 3px;
+  }
+
+  pre {
+    background: #0d1117; color: #d3dce6; border-radius: 6px; padding: 1.1rem 1.3rem;
+    overflow-x: auto; font-family: var(--mono); font-size: 0.82rem; line-height: 1.55; margin: 0.8rem 0 1.2rem;
+  }
+  pre code { background: none; border: none; padding: 0; font-size: 1em; color: inherit; }
+
+  .footline {
+    margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--rule);
+    font-size: 0.8rem; color: var(--text-faint); font-family: var(--mono);
+  }
+
+  a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .path-picker { grid-template-columns: 1fr; }
+    h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <a class="backlink" href="list">← Back to dashboard</a>
+
+  <header class="masthead">
+    <div class="eyebrow">Integration Docs — Choose Your Path</div>
+    <h1>Two Ways to Integrate</h1>
+  </header>
+
+  <div class="account-card" id="account-card">
+    <div>
+      <div class="label">Signed in as</div>
+      <div class="name" id="account-name">Loading…</div>
+    </div>
+  </div>
+
+  <p class="lede">
+    Every client gets the same onboarding: a firm slug, a dashboard password, and an API key.
+    What you do with them is up to you — plug directly into your own product, or use the
+    dashboard and hosted verification page we already built. Nothing stops you from using both
+    for different parts of your flow.
+  </p>
+
+  <div class="path-picker">
+    <div class="path-card">
+      <div class="path-eyebrow">Path A</div>
+      <h3>API Only</h3>
+      <p>You have your own product or backend and want to embed verification directly into it — your users never see our page.</p>
+      <div class="fit"><strong>Best for:</strong> teams with engineering resources building their own onboarding UI.</div>
+    </div>
+    <div class="path-card">
+      <div class="path-eyebrow">Path B</div>
+      <h3>Dashboard + Hosted Page</h3>
+      <p>You don't want to build anything. Log into your dashboard, generate a link, send it to your customer.</p>
+      <div class="fit"><strong>Best for:</strong> teams who want to be verifying customers today, zero code required.</div>
+    </div>
+  </div>
+
+  <section id="path-a">
+    <div class="section-head">
+      <span class="section-letter">A</span>
+      <div>
+        <h2>API Only</h2>
+        <div class="section-sub">Your backend talks to our API directly — no dashboard, no hosted page, full control over your own UI.</div>
+      </div>
+    </div>
+
+    <h3>What you're given at onboarding</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Credential</th><th>Used as</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>Firm slug</td><td><code>X-Client-Id</code> header</td><td>Identifies which firm a request belongs to</td></tr>
+          <tr><td>API key</td><td><code>X-Api-Key</code> header</td><td>Authenticates the request — shown once at onboarding, never recoverable, only regenerable</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Submit a verification directly</h3>
+    <div class="method-path"><span class="method post">POST</span>/api/v1/verify</div>
+    <pre><code>curl -X POST https://18.185.59.156/api/v1/verify \
+  --cacert aws_admin_cert.pem \
+  -H "X-Client-Id: <span class="fill-slug">your-firm-slug</span>" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  -F "country=NG" \
+  -F "doc_type=passport" \
+  -F "mode=3" \
+  -F "user_ref=your_internal_applicant_id" \
+  -F "id_image=@id_front.jpg" \
+  -F "liveness_frames=@frame1.jpg" \
+  -F "liveness_frames=@frame2.jpg"</code></pre>
+    <p>
+      Every submission is automatically tagged to your firm — results show up filtered to only
+      your data if you ever log into the dashboard to review history, even though you're not
+      required to use it day-to-day.
+    </p>
+
+    <h3>Optional — generate a link anyway, programmatically</h3>
+    <p>
+      If part of your flow still wants to hand off to our hosted capture page (e.g. you don't
+      want to build the camera/liveness UI yourself, but everything else is your own backend),
+      you can generate a one-time link with the same credentials — no dashboard login needed:
+    </p>
+    <div class="method-path"><span class="method post">POST</span>/api/v1/admin/sessions</div>
+    <pre><code>curl -X POST https://18.185.59.156/api/v1/admin/sessions \
+  --cacert aws_admin_cert.pem \
+  -H "X-Client-Id: <span class="fill-slug">your-firm-slug</span>" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"user_ref": "your_internal_applicant_id"}'</code></pre>
+    <pre><code>{
+  "ok": true,
+  "token": "CjKt-NRk8rScP53wWBJKYDlzgPyGZdsM",
+  "url": "https://id-verification-riea.onrender.com/index.html?token=CjKt-...",
+  "expires_at": "2026-07-11T10:06:09.630214Z"
+}</code></pre>
+    <p>Redirect your user to <code>url</code>. It's single-use and expires in 24 hours — see Path B for what happens next.</p>
+
+    <div class="callout">
+      <p>
+        <strong>Why a separate token instead of just using your API key for the link?</strong>
+        Your API key is a long-lived secret — putting it in a URL a customer's browser holds
+        means anyone who intercepts that link has standing access to your account forever. A
+        session token is random, disposable, tied to one applicant, and dies the instant it's
+        used. Worst case if one leaks: someone burns one verification slot. Your real key is
+        never exposed.
+      </p>
+    </div>
+  </section>
+
+  <section id="path-b">
+    <div class="section-head">
+      <span class="section-letter">B</span>
+      <div>
+        <h2>Dashboard + Hosted Page</h2>
+        <div class="section-sub">No code. Log in, generate a link, send it — the result lands back in your dashboard automatically.</div>
+      </div>
+    </div>
+
+    <h3>What you're given at onboarding</h3>
+    <ul class="plain">
+      <li><strong>A firm slug</strong> — your identifier on the login page</li>
+      <li><strong>A dashboard password</strong> — set at onboarding, changeable any time</li>
+    </ul>
+
+    <h3>How it works, step by step</h3>
+    <ol class="steps">
+      <li><strong>Log in</strong> at the admin login page. Enter your firm slug in the "Firm" field and your password — you'll land on your Verifications list, scoped to only your firm's data.</li>
+      <li><strong>Click "Generate Link"</strong> in the nav, optionally add an applicant reference (your own internal ID for this person), and click Generate.</li>
+      <li><strong>Send the link</strong> you get back to your customer — email, SMS, chat, however you reach them.</li>
+      <li><strong>Your customer opens it</strong> on their own phone or laptop, and completes the document + liveness capture on our hosted page — no account, no app install.</li>
+      <li><strong>The link stops working</strong> the instant they finish (or after 24 hours, whichever comes first) — they can't reopen it, and neither can anyone else who might have seen it.</li>
+      <li><strong>The result appears in your dashboard</strong>, automatically tagged to your firm, alongside every other verification you've run.</li>
+    </ol>
+
+    <div class="callout good">
+      <p>
+        This is the fix for "my client re-verified themselves twice with the same link" — once
+        a link is used, it's dead. There is no way to reuse it, and no separate "normal URL"
+        that bypasses this — a verification link is required to reach the capture flow at all.
+      </p>
+    </div>
+
+    <h3>Automating link generation without touching the dashboard</h3>
+    <p>
+      If your own site or app has a signup flow and you'd rather not have a human click
+      "Generate Link" for every customer, your backend can call the exact same endpoint the
+      dashboard button uses — see Path A's <code>POST /sessions</code> example above, using
+      your firm's API key instead of a dashboard login. Same one-time link, same automatic
+      dashboard visibility, zero manual steps.
+    </p>
+  </section>
+
+  <div class="footline">kyc verification — pick one path, switch any time, or use both at once</div>
+
+</div>
+
+<script>
+(async function () {
+  const nameEl = document.getElementById('account-name');
+  const cardEl = document.getElementById('account-card');
+  try {
+    const resp = await fetch('/api/v1/admin/me', { credentials: 'same-origin' });
+    if (!resp.ok) { nameEl.textContent = 'Unknown'; return; }
+    const data = await resp.json();
+    if (data.super_admin) {
+      nameEl.textContent = 'Super Admin — viewing generic docs (no single firm slug applies)';
+      return;
+    }
+    nameEl.innerHTML = `${escapeHtml(data.firm_name)} <span class="slug">${escapeHtml(data.firm_slug)}</span>`;
+    document.querySelectorAll('.fill-slug').forEach(el => { el.textContent = data.firm_slug; });
+  } catch (_) {
+    nameEl.textContent = 'Unknown';
+  }
+})();
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+</script>
+
+</body>
+</html>
