@@ -604,24 +604,6 @@
 .pep-banner.warn    { background: rgba(255, 189, 89, 0.08); color: #ffbd59; border: 1px solid rgba(255,189,89,0.25); }
 .pep-banner.unavail { background: rgba(255, 255, 255, 0.05); color: var(--a-muted); border: 1px solid var(--a-border); }
 
-.db-checked-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.db-checked-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--a-panel-2);
-  border: 1px solid var(--a-border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 0.82rem;
-}
-
 /* ── Databases registry page ──────────────────────────────────────────── */
 
 .db-registry-tabs {

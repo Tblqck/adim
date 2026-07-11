@@ -504,10 +504,6 @@ function renderPep(row) {
   const bannerClass = p.risk_classification === 'CLEAN' ? 'clean'
     : p.risk_classification === 'POTENTIAL_MATCH' ? 'warn' : 'unavail';
 
-  const dbGrid = (p.databases_checked || []).map(d => `
-    <div class="db-checked-item"><span>${escapeHtml(d.name)}</span><span class="badge green">${escapeHtml(d.status)}</span></div>
-  `).join('');
-
   const matches = (p.matches || []).map(m => `
     <div class="field-card">
       <div class="label">${escapeHtml((m.datasets || []).join(', ') || 'match')}</div>
@@ -526,15 +522,18 @@ function renderPep(row) {
         ${escapeHtml(p.banner)}<br>
         <span style="font-weight:400;font-size:0.85rem;opacity:0.85">${fmtPct(p.match_confidence)} match confidence</span>
       </div>
+      ${p.summary ? `<div class="admin-note" style="margin-top:14px">${escapeHtml(p.summary)}</div>` : ''}
     </div>
 
     ${matches ? `<div class="admin-panel"><h3>Matches</h3><div class="field-grid">${matches}</div></div>` : ''}
 
     <div class="admin-panel">
       <h3>Databases checked</h3>
-      <div class="db-checked-grid">${dbGrid}</div>
+      <div id="db-checked-tabs"></div>
     </div>
   `;
+
+  mountDbCategoryTabs(document.getElementById('db-checked-tabs'), p.databases_checked, { showStatus: true });
 }
 
 // ── Skeleton ─────────────────────────────────────────────────────────────

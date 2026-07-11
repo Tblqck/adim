@@ -108,6 +108,10 @@ function renderPepPanel(p) {
       ${p.summary ? `<div class="admin-note" style="margin-top:14px">${escapeHtml(p.summary)}</div>` : ''}
     </div>
     ${matches ? `<div class="admin-panel"><h3>Matches</h3><div class="field-grid">${matches}</div></div>` : ''}
+    <div class="admin-panel">
+      <h3>Databases checked</h3>
+      <div id="db-checked-tabs"></div>
+    </div>
   `;
 }
 
@@ -118,6 +122,10 @@ function renderResult(data) {
     renderOcrPanel(data.ocr_fields, data.mrz) +
     renderForensicsPanel(data.forensics) +
     renderPepPanel(data.pep);
+
+  if (data.pep) {
+    mountDbCategoryTabs(document.getElementById('db-checked-tabs'), data.pep.databases_checked, { showStatus: true });
+  }
 }
 
 async function runCheck() {
