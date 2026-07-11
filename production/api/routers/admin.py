@@ -2,15 +2,15 @@
 Admin API — list & detail endpoints for the verification dashboard.
 
 Every route requires an authenticated admin session (production/api/routers
-/admin_auth.py) and a configured Supabase connection — unlike capture.py's
-local-disk fallback, there is no offline mode here: the dashboard is
-meaningless without persisted history.
+/admin_auth.py) and a configured Supabase connection — there is no offline
+mode here: the dashboard is meaningless without persisted history.
 """
 
 from __future__ import annotations
 
 import logging
 import os
+import re
 import secrets
 from datetime import date, datetime, timedelta
 from typing import Any, Optional
@@ -22,11 +22,13 @@ from production.api.routers.admin_auth import (
     generate_api_key, hash_api_key, hash_password, require_admin,
     require_admin_or_firm_key, router as auth_router,
 )
-from production.api.routers.verify import _COUNTRY_CODE_RE, _VALID_DOC_TYPES
 from production.database import db
 from production.storage import storage
 
 log = logging.getLogger(__name__)
+
+_COUNTRY_CODE_RE = re.compile(r"^[A-Za-z]{2}$")
+_VALID_DOC_TYPES = {"passport", "national_id", "drivers_license", "residence_permit"}
 
 router = APIRouter(tags=["admin"])
 router.include_router(auth_router)

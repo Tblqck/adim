@@ -5,23 +5,6 @@ __pycache__/
 .env
 .env.local
 
-# ONNX model weights — 352MB, one file (w600k_r50.onnx, 174MB) exceeds
-# GitHub's 100MB hard per-file limit. Fetch via scripts/download_models.py
-# instead of committing.
-production/models/
-
 # Reference document images — regenerated cache (matcher/fetcher.py pulls
 # these from Wikimedia on demand), not source.
 production/references/
-
-# Contain actual captured face/ID photos from local testing — real
-# biometric/PII data, must never be committed.
-production/web2/
-production/web_test/
-production/payload/
-production/*/captures/
-
-# Stale zip archives — redundant with the unzipped directories already
-# present (matcher/, web/).
-production/matcher.zip
-production/web.zip

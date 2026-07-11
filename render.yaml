@@ -3,5 +3,13 @@ services:
     name: adim-admin
     runtime: docker
     envVars:
-      - key: AWS_ADMIN_API_BASE
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: ADMIN_SESSION_SECRET
+        sync: false
+      - key: OPENSANCTIONS_API_KEY
+        sync: false
+      - key: CAPTURE_BASE_URL
         sync: false
