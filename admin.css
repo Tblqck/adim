@@ -622,6 +622,112 @@
   font-size: 0.82rem;
 }
 
+/* ── Databases registry page ──────────────────────────────────────────── */
+
+.db-registry-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.db-registry-tab {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--a-panel);
+  border: 1px solid var(--a-border);
+  color: var(--a-text);
+  padding: 14px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.db-registry-tab:hover { border-color: var(--a-accent); }
+
+.db-registry-tab.active {
+  background: var(--a-accent);
+  border-color: var(--a-accent);
+  color: #05070c;
+}
+
+.db-registry-tab .count {
+  background: rgba(255, 255, 255, 0.14);
+  color: inherit;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.db-registry-tab.active .count { background: rgba(5, 7, 12, 0.18); }
+
+.db-registry-tab .count.hit { background: rgba(255, 85, 117, 0.22); color: #ff5575; }
+.db-registry-tab.active .count.hit { background: rgba(5, 7, 12, 0.32); color: #ff5575; }
+
+.db-registry-search {
+  width: 100%;
+  background: var(--a-panel-2);
+  border: 1px solid var(--a-border);
+  color: var(--a-text);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  margin-bottom: 20px;
+}
+
+.db-registry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.db-registry-card {
+  background: var(--a-panel);
+  border: 1px solid var(--a-border);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.db-registry-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.db-registry-card h4 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.db-registry-card .agency {
+  color: var(--a-muted);
+  font-size: 0.82rem;
+  margin-bottom: 14px;
+}
+
+.db-registry-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--a-panel-2);
+  border: 1px solid var(--a-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: var(--a-muted);
+  margin-top: 8px;
+}
+
 /* ── Match profile cards (PEP / KYB result matches) ──────────────────────── */
 
 .match-card {

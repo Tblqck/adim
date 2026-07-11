@@ -169,6 +169,72 @@ function escapeHtml(s) {
     .replace(/>/g, '&gt;');
 }
 
+// ── Databases-checked category tabs ─────────────────────────────────────────
+// Shared by screen.js/kyb.js (per-search results, showStatus: true) and
+// databases.js could use it too, but that page also needs a search box so it
+// keeps its own renderer — this one groups a flat databases_checked array
+// (each entry carrying `category` from production/core/db_catalog.py) back
+// into the same three PEP/Sanctions/Adverse-Media tabs the Databases
+// registry page shows, so a search result and the registry page always look
+// like the same view of the same data.
+
+const DB_CATEGORY_LABELS = {
+  pep:           'Politically Exposed Persons (PEP)',
+  sanctions:     'Global Sanctions',
+  adverse_media: 'Adverse Media',
+};
+const DB_CATEGORY_ORDER = ['pep', 'sanctions', 'adverse_media'];
+
+function renderDbCard(d, showStatus) {
+  const statusClass = d.status === 'HIT' ? 'red' : d.status === 'UNAVAILABLE' ? 'gray' : 'green';
+  return `
+    <div class="db-registry-card">
+      <div class="db-registry-card-head">
+        <h4>${escapeHtml(d.name)}</h4>
+        ${showStatus ? `<span class="badge ${statusClass}">${escapeHtml(d.status)}</span>` : ''}
+      </div>
+      <div class="agency">🔗 Agency: ${escapeHtml(d.agency)}</div>
+      <div class="db-registry-pill">🌐 ${escapeHtml(d.region)}</div>
+      <div class="db-registry-pill">📅 Added to App: ${escapeHtml(d.added)}</div>
+    </div>
+  `;
+}
+
+// containerEl gets fully owned/re-rendered by this function on every tab
+// click — call once after inserting containerEl into the DOM.
+function mountDbCategoryTabs(containerEl, databases, { showStatus = false } = {}) {
+  const grouped = {};
+  (databases || []).forEach(d => (grouped[d.category] = grouped[d.category] || []).push(d));
+  const cats = DB_CATEGORY_ORDER.filter(c => (grouped[c] || []).length);
+  if (!cats.length) { containerEl.innerHTML = '<div class="admin-empty">No databases to show.</div>'; return; }
+
+  let active = cats[0];
+
+  function render() {
+    const tabsHtml = cats.map(cat => {
+      const items = grouped[cat];
+      const hits  = showStatus ? items.filter(d => d.status === 'HIT').length : null;
+      const label = showStatus ? `${hits}/${items.length} hit` : `${items.length} DBs`;
+      return `
+        <button class="db-registry-tab ${cat === active ? 'active' : ''}" data-cat="${cat}">
+          ${escapeHtml(DB_CATEGORY_LABELS[cat])} <span class="count ${showStatus && hits > 0 ? 'hit' : ''}">${label}</span>
+        </button>
+      `;
+    }).join('');
+
+    containerEl.innerHTML = `
+      <div class="db-registry-tabs">${tabsHtml}</div>
+      <div class="db-registry-grid">${grouped[active].map(d => renderDbCard(d, showStatus)).join('')}</div>
+    `;
+
+    containerEl.querySelectorAll('.db-registry-tab').forEach(btn => {
+      btn.addEventListener('click', () => { active = btn.dataset.cat; render(); });
+    });
+  }
+
+  render();
+}
+
 // ── Generic autocomplete dropdown ────────────────────────────────────────
 // Attaches a searchable dropdown to a text input. Works for both a static
 // list (countries) and an async server query (user/name search) — pass

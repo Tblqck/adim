@@ -105,6 +105,7 @@ function renderPepPanel(p) {
         ${escapeHtml(p.banner)}<br>
         <span style="font-weight:400;font-size:0.85rem;opacity:0.85">${fmtPct(p.match_confidence)} match confidence</span>
       </div>
+      ${p.summary ? `<div class="admin-note" style="margin-top:14px">${escapeHtml(p.summary)}</div>` : ''}
     </div>
     ${matches ? `<div class="admin-panel"><h3>Matches</h3><div class="field-grid">${matches}</div></div>` : ''}
   `;

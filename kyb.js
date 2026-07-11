@@ -7,10 +7,6 @@ function renderScreenResult(p) {
   const bannerClass = p.risk_classification === 'CLEAN' ? 'clean'
     : p.risk_classification === 'POTENTIAL_MATCH' ? 'warn' : 'unavail';
 
-  const dbGrid = (p.databases_checked || []).map(d => `
-    <div class="db-checked-item"><span>${escapeHtml(d.name)}</span><span class="badge green">${escapeHtml(d.status)}</span></div>
-  `).join('');
-
   const matches = (p.matches || []).map(m => renderMatchCard(m, [
     { label: 'Jurisdiction',         value: countryLabel(m.jurisdiction || m.country) },
     { label: 'Entity type',          value: m.entity_type },
@@ -35,13 +31,17 @@ function renderScreenResult(p) {
       ${p.error ? `<div class="admin-note" style="margin-top:0;background:rgba(255,85,117,0.08);border-color:rgba(255,85,117,0.3);color:#ff5575">${escapeHtml(p.error)}</div>` : ''}
     </div>
 
+    ${p.summary ? `<div class="admin-panel"><h3>Summary</h3><div class="admin-note" style="margin-top:0">${escapeHtml(p.summary)}</div></div>` : ''}
+
     ${matches ? `<div class="admin-panel"><h3>Matches</h3>${matches}</div>` : ''}
 
     <div class="admin-panel">
       <h3>Databases checked</h3>
-      <div class="db-checked-grid">${dbGrid}</div>
+      <div id="db-checked-tabs"></div>
     </div>
   `;
+
+  mountDbCategoryTabs(document.getElementById('db-checked-tabs'), p.databases_checked, { showStatus: true });
 }
 
 async function runScreen() {
