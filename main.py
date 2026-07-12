@@ -1,10 +1,11 @@
 """
 Admin dashboard — FastAPI entry point.
 
-Contains only the admin dashboard: its static HTML/JS (this folder) and the
-backend it calls into (production/ — PEP/KYB screening, document-check,
-verifications history, auth, DB). No client-facing ID-capture/verification
-flow, no ONNX models — that's a separate concern and lives elsewhere.
+Self-contained: serves the static admin frontend (this folder) and proxies
+every /api/v1/admin/* call to the API server that runs the verification
+engine (see admin_proxy.py, development/production/). No DB client, no
+OpenCV/OCR, no secrets — this folder can be deployed on its own with
+nothing outside it.
 
 Run locally:
     uvicorn main:app --reload --port 5050
@@ -13,7 +14,6 @@ Run locally:
 from __future__ import annotations
 
 import logging
-from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -24,8 +24,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 
-from production.database import db
-from production.api.routers import admin as admin_router
+import admin_proxy
 
 logging.basicConfig(
     level=logging.INFO,
@@ -35,19 +34,10 @@ logging.basicConfig(
 _HERE     = Path(__file__).resolve().parent
 _NO_STORE = {"Cache-Control": "no-store"}
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await db.connect()
-    yield
-    await db.disconnect()
-
-
 app = FastAPI(
     title       = "KYC Admin Dashboard",
-    description = "Review dashboard for verification results, PEP/KYB screening, and document checks.",
-    version     = "3.0.0",
-    lifespan    = lifespan,
+    description = "Review dashboard for verification results — proxies to the API server.",
+    version     = "2.0.0",
 )
 
 app.add_middleware(
@@ -57,12 +47,12 @@ app.add_middleware(
     allow_headers  = ["*"],
 )
 
-app.include_router(admin_router.router, prefix="/api/v1/admin")
+app.include_router(admin_proxy.router, prefix="/api/v1/admin")
 
 
 @app.get("/health", tags=["meta"])
 async def health():
-    return {"status": "ok", "db": db.available}
+    return {"status": "ok"}
 
 
 # Country-code autocomplete data, shared by list/screen/document-check pages.

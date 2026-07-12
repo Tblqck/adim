@@ -3,13 +3,5 @@ services:
     name: adim-admin
     runtime: docker
     envVars:
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_KEY
-        sync: false
-      - key: ADMIN_SESSION_SECRET
-        sync: false
-      - key: OPENSANCTIONS_API_KEY
-        sync: false
-      - key: CAPTURE_BASE_URL
+      - key: API_SERVER_URL
         sync: false

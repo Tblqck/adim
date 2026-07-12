@@ -1,14 +1,4 @@
 fastapi>=0.111
 uvicorn[standard]>=0.29
-python-multipart>=0.0.9
-opencv-python-headless>=4.9
-numpy>=1.26
-Pillow>=10.3
-pytesseract>=0.3
 httpx>=0.27
-requests>=2.31
 python-dotenv>=1.0
-itsdangerous>=2.1
-
-# standalone multi-language card-OCR extractor (production/core/ocr_extract/)
-rapidocr>=3.9

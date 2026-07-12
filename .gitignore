@@ -4,7 +4,3 @@ __pycache__/
 .claude/
 .env
 .env.local
-
-# Reference document images — regenerated cache (matcher/fetcher.py pulls
-# these from Wikimedia on demand), not source.
-production/references/
