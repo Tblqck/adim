@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <title>Admin · Manage Users</title>
+</head>
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div>
+        <h1>Manage Users</h1>
+        <div class="sub">Employee logins for your firm — each has their own username/password, so reviews and searches are attributed to the person who actually did them</div>
+      </div>
+      <div class="review-actions">
+        <span class="sub" id="user-badge"></span>
+        <a class="admin-btn" href="list">Verifications</a>
+        <button class="admin-btn" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="field-grid">
+        <div class="field-card">
+          <div class="label">Username</div>
+          <input type="text" id="u-username" class="edit-input" placeholder="jane">
+        </div>
+        <div class="field-card">
+          <div class="label">Display name</div>
+          <input type="text" id="u-display-name" class="edit-input" placeholder="Jane Smith">
+        </div>
+        <div class="field-card">
+          <div class="label">Password</div>
+          <input type="password" id="u-password" class="edit-input" placeholder="Choose a password">
+        </div>
+        <div class="field-card">
+          <div class="label">Can create users</div>
+          <label style="display:flex;align-items:center;gap:8px;height:100%">
+            <input type="checkbox" id="u-can-create-users">
+            <span class="sub">Let this employee create further employee logins</span>
+          </label>
+        </div>
+      </div>
+      <button class="admin-btn primary" id="create-btn" style="margin-top:16px">Create user</button>
+      <div class="admin-note" id="create-error" style="display:none;margin-top:14px;background:rgba(255,85,117,0.08);border-color:rgba(255,85,117,0.3);color:#ff5575"></div>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Display name</th>
+            <th>Can create users</th>
+            <th>Active</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="admin-empty" id="empty" style="display:none">No employees yet — create the first one above.</div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="users.js"></script>
+</body>
+</html>

@@ -52,7 +52,6 @@ async function runScreen() {
   // still fine to drop, the screen itself doesn't require it.
   const jurisdiction = /^[A-Za-z]{2}$/.test(jurisdictionRaw) ? jurisdictionRaw.toUpperCase() : null;
   const registration_number = document.getElementById('k-registration-number').value.trim() || null;
-  const searched_by  = document.getElementById('k-searched-by').value.trim() || null;
 
   errorBox.style.display = 'none';
   if (!company_name) {
@@ -71,7 +70,7 @@ async function runScreen() {
     const resp = await adminFetch('/screen-company', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ company_name, jurisdiction, registration_number, searched_by, firm_id: selectedFirmId }),
+      body: JSON.stringify({ company_name, jurisdiction, registration_number, firm_id: selectedFirmId }),
     });
     if (!resp.ok) {
       const body = await resp.json().catch(() => ({}));

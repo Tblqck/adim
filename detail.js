@@ -67,7 +67,6 @@ function renderReviewStatus(row) {
   } else {
     badge.style.display = 'none';
   }
-  document.getElementById('reviewer-name').value = row.reviewed_by || '';
 }
 
 function collectCorrections() {
@@ -109,25 +108,15 @@ function showFormError(message, highlightId) {
   }
 }
 
-document.getElementById('reviewer-name').addEventListener('input', (e) => {
-  e.target.classList.remove('input-error');
-  clearFormError();
-});
-
 async function submitReview(verified) {
   clearFormError();
-  const reviewedBy = document.getElementById('reviewer-name').value.trim();
-  if (!reviewedBy) {
-    showFormError('Enter your name in "Reviewed by" before saving/approving/rejecting.', 'reviewer-name');
-    return;
-  }
   const corrected_fields = editing ? collectCorrections() : undefined;
   if (verified === undefined && (!corrected_fields || !Object.keys(corrected_fields).length)) {
     showFormError('No changed values to save.');
     return;
   }
 
-  const body = { reviewed_by: reviewedBy, corrected_fields };
+  const body = { corrected_fields };
   if (verified !== undefined) body.verified = verified;
 
   const resp = await adminFetch(`/verifications/${id}`, {

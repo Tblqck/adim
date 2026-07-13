@@ -134,7 +134,6 @@ async function runCheck() {
   const docType = document.getElementById('d-doc-type').value;
   const frontFile = document.getElementById('d-image-front').files[0];
   const backFile = document.getElementById('d-image-back').files[0];
-  const checkedBy = document.getElementById('d-checked-by').value.trim() || null;
 
   errorBox.style.display = 'none';
 
@@ -161,7 +160,6 @@ async function runCheck() {
   form.append('doc_type', docType);
   form.append('id_image', frontFile);
   if (backFile) form.append('id_image_back', backFile);
-  if (checkedBy) form.append('checked_by', checkedBy);
   if (selectedFirmId) form.append('firm_id', selectedFirmId);
 
   try {

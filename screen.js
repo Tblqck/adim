@@ -49,7 +49,6 @@ async function runScreen() {
   // half-typed country name the admin never picked from the dropdown is
   // still fine to drop, the screen itself doesn't require it.
   const nationality   = /^[A-Za-z]{2}$/.test(nationalityRaw) ? nationalityRaw.toUpperCase() : null;
-  const searched_by   = document.getElementById('s-searched-by').value.trim() || null;
 
   errorBox.style.display = 'none';
   if (!given_names && !surname) {
@@ -68,7 +67,7 @@ async function runScreen() {
     const resp = await adminFetch('/screen', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ given_names, surname, date_of_birth, nationality, searched_by, firm_id: selectedFirmId }),
+      body: JSON.stringify({ given_names, surname, date_of_birth, nationality, firm_id: selectedFirmId }),
     });
     if (!resp.ok) {
       const body = await resp.json().catch(() => ({}));

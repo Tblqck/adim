@@ -50,6 +50,24 @@ async function renderFirmFilter(containerId, onChange) {
   wrap.querySelector('select').addEventListener('change', (e) => onChange(e.target.value || null));
 }
 
+// ── "Signed in as X" + Manage Users link ────────────────────────────────────
+// Self-initializing: every admin page includes admin.js, so this just looks
+// for a #user-badge element (present on every topbar except login.html) and
+// fills it in from what login.html stored in sessionStorage — no per-page
+// wiring needed. `kyc_can_create_users` gates the Manage Users link exactly
+// the same way the server gates POST/PATCH /firm-users.
+(function renderUserBadge() {
+  const el = document.getElementById('user-badge');
+  if (!el) return;
+
+  const name = sessionStorage.getItem('kyc_display_name');
+  if (!name) return;
+
+  const canCreateUsers = sessionStorage.getItem('kyc_can_create_users') === '1';
+  el.innerHTML = `Signed in as ${escapeHtml(name)}` +
+    (canCreateUsers ? ' &middot; <a href="users">Manage Users</a>' : '');
+})();
+
 function verdictBadgeClass(verified, verdict) {
   if (verified === true) return 'green';
   if (verified === false) return 'red';
