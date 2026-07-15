@@ -6,12 +6,59 @@ const ADMIN_API = '/api/v1/admin';
 async function adminFetch(path, opts = {}) {
   const resp = await fetch(ADMIN_API + path, { credentials: 'same-origin', ...opts });
   if (resp.status === 401) {
+    // Clear cached role flags too — a stale kyc_super_admin/kyc_can_create_users
+    // from the expired session shouldn't leak into whatever gets logged into next.
+    sessionStorage.clear();
     if (!location.pathname.endsWith('/admin/login')) {
       location.href = 'login';
     }
     throw new Error('not authenticated');
   }
   return resp;
+}
+
+// ── Password field controls (show/hide, copy, generate) ────────────────────
+// Shared by any "set a password for someone else" form (create firm, create
+// employee) — the value has to be read off-screen and relayed to that
+// person, so unlike a normal login field it needs to be visible/copyable.
+
+function wirePasswordVisibility(input, toggleBtn) {
+  toggleBtn.addEventListener('click', () => {
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    toggleBtn.textContent = showing ? 'Show' : 'Hide';
+  });
+}
+
+function wirePasswordCopy(input, copyBtn) {
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(input.value);
+      copyBtn.textContent = 'Copied ✓';
+      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+    } catch (_) {
+      copyBtn.textContent = 'Copy failed';
+    }
+  });
+}
+
+function wireGeneratePassword(generateBtn, input) {
+  generateBtn.addEventListener('click', async () => {
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Generating…';
+    try {
+      const resp = await adminFetch('/generate-password');
+      if (resp.ok) {
+        const data = await resp.json();
+        input.value = data.password || '';
+      }
+    } catch (_) {
+      // adminFetch already redirected to login on 401
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.textContent = 'Generate';
+    }
+  });
 }
 
 // ── Firm filter (super-admin only) ──────────────────────────────────────────
@@ -66,6 +113,21 @@ async function renderFirmFilter(containerId, onChange) {
   const canCreateUsers = sessionStorage.getItem('kyc_can_create_users') === '1';
   el.innerHTML = `Signed in as ${escapeHtml(name)}` +
     (canCreateUsers ? ' &middot; <a href="users">Manage Users</a>' : '');
+})();
+
+// ── Topbar nav links gated by role ──────────────────────────────────────────
+// "Manage Users" / "Firms" only make sense for people who can act on them —
+// a firm-scoped employee without can_create_users, or any non-super-admin,
+// would just get a 403 from the server if they followed the link.
+(function toggleGatedNavLinks() {
+  const isSuperAdmin   = sessionStorage.getItem('kyc_super_admin') === '1';
+  const canCreateUsers = sessionStorage.getItem('kyc_can_create_users') === '1';
+
+  const usersLink = document.getElementById('users-nav-link');
+  if (usersLink) usersLink.style.display = canCreateUsers ? '' : 'none';
+
+  const firmsLink = document.getElementById('firms-nav-link');
+  if (firmsLink) firmsLink.style.display = isSuperAdmin ? '' : 'none';
 })();
 
 function verdictBadgeClass(verified, verdict) {

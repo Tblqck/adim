@@ -71,6 +71,21 @@
   font-weight: 600;
 }
 
+.admin-btn.danger {
+  border-color: rgba(255, 85, 117, 0.4);
+  color: #ff5575;
+}
+
+.admin-btn.danger:hover {
+  background: rgba(255, 85, 117, 0.1);
+  border-color: #ff5575;
+}
+
+.admin-btn.small {
+  padding: 5px 12px;
+  font-size: 0.78rem;
+}
+
 /* ── Review actions (detail topbar) ───────────────────────────────────── */
 
 .review-actions {
@@ -324,6 +339,11 @@
 .admin-table tbody tr:hover { background: rgba(59, 130, 246, 0.06); }
 .admin-table tbody tr:last-child td { border-bottom: none; }
 
+/* Soft-deleted row — still visible/clickable during the retention window
+   (see RETENTION_DAYS in admin.py), just visually de-emphasized. */
+.admin-table tbody tr.row-deleted { opacity: 0.4; }
+.admin-table tbody tr.row-deleted:hover { opacity: 0.7; }
+
 .admin-empty {
   padding: 40px;
   text-align: center;
@@ -426,6 +446,28 @@
   overflow-x: auto;
   white-space: pre;
 }
+
+.code-block {
+  background: #05070c;
+  border: 1px solid var(--a-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: var(--a-mono);
+  font-size: 0.8rem;
+  color: var(--a-text);
+  letter-spacing: 0.01em;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 10px 0 16px;
+}
+
+.docs-section { margin-top: 28px; }
+.docs-section h4 { font-size: 0.85rem; margin: 18px 0 4px; }
+.docs-section p { color: var(--a-muted); font-size: 0.85rem; line-height: 1.6; max-width: 68ch; }
+.docs-section table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 10px 0 16px; }
+.docs-section th, .docs-section td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--a-border); }
+.docs-section th { color: var(--a-muted); font-weight: 600; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.05em; }
+.docs-section code { font-family: var(--a-mono); background: rgba(255,255,255,0.06); padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em; }
 
 .field-grid {
   display: grid;

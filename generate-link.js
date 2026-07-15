@@ -122,17 +122,25 @@ async function loadLinks() {
               <th>Applicant ref</th>
               <th>Status</th>
               <th>Expires</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            ${items.map(row => `
-              <tr>
+            ${items.map(row => {
+              const isDeleted = !!row.deleted_at;
+              return `
+              <tr class="${isDeleted ? 'row-deleted' : ''}" style="cursor:default">
                 <td>${escapeHtml(fmtDate(row.created_at))}</td>
                 <td>${escapeHtml(row.user_ref || '—')}</td>
                 <td><span class="badge ${statusBadgeClass(row.status)}">${escapeHtml(row.status)}</span></td>
                 <td>${escapeHtml(fmtDate(row.expires_at))}</td>
+                <td>
+                  <button class="admin-btn small ${isDeleted ? '' : 'danger'}" data-action="${isDeleted ? 'restore' : 'delete'}" data-id="${row.id}">
+                    ${isDeleted ? 'Restore' : 'Delete'}
+                  </button>
+                </td>
               </tr>
-            `).join('')}
+            `; }).join('')}
           </tbody>
         </table>
       </div>
@@ -141,6 +149,19 @@ async function loadLinks() {
     // adminFetch already redirected to login on 401
   }
 }
+
+async function handleDeleteRestore(action, id) {
+  if (action === 'delete' && !confirm('Delete this link? It stays recoverable for 4 days, then is permanently removed.')) return;
+  const path   = `/sessions/${id}${action === 'restore' ? '/restore' : ''}`;
+  const method = action === 'restore' ? 'POST' : 'DELETE';
+  await adminFetch(path, { method }).catch(() => {});
+  await loadLinks();
+}
+
+linksTableWrap.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (btn) handleDeleteRestore(btn.dataset.action, btn.dataset.id);
+});
 
 renderFirmFilter('firm-filter-slot', (firmId) => {
   selectedFirmId = firmId;

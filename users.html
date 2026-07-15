@@ -17,6 +17,7 @@
       <div class="review-actions">
         <span class="sub" id="user-badge"></span>
         <a class="admin-btn" href="list">Verifications</a>
+        <a class="admin-btn" href="api">API</a>
         <button class="admin-btn" id="logout-btn">Sign out</button>
       </div>
     </div>
@@ -33,7 +34,12 @@
         </div>
         <div class="field-card">
           <div class="label">Password</div>
-          <input type="password" id="u-password" class="edit-input" placeholder="Choose a password">
+          <div style="display:flex;gap:8px">
+            <input type="password" id="u-password" class="edit-input" placeholder="Choose a password">
+            <button class="admin-btn" id="generate-password-btn" type="button" style="white-space:nowrap">Generate</button>
+            <button class="admin-btn" id="toggle-password-btn" type="button" style="white-space:nowrap">Show</button>
+            <button class="admin-btn" id="copy-password-btn" type="button" style="white-space:nowrap">Copy</button>
+          </div>
         </div>
         <div class="field-card">
           <div class="label">Can create users</div>
@@ -56,6 +62,7 @@
             <th>Can create users</th>
             <th>Active</th>
             <th>Created</th>
+            <th></th>
             <th></th>
           </tr>
         </thead>

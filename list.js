@@ -57,7 +57,7 @@ attachAutocomplete(document.getElementById('f-q'), {
 });
 
 function renderSkeletonRows(count = 8) {
-  const cols = 6;
+  const cols = 7;
   rowsEl.innerHTML = Array.from({ length: count }, () => `
     <tr class="skel-row">
       ${Array.from({ length: cols }, () => `<td><span class="skel skel-text medium"></span></td>`).join('')}
@@ -106,8 +106,10 @@ async function loadPage(page = 1) {
     const name = extracted.full_name || '—';
     const badgeClass = verdictBadgeClass(row.verified, row.overall_verdict);
     const badgeText  = (row.overall_verdict || (row.verified ? 'verified' : 'pending')).replace(/_/g, ' ');
+    const isDeleted  = !!row.deleted_at;
 
     const tr = document.createElement('tr');
+    if (isDeleted) tr.classList.add('row-deleted');
     tr.innerHTML = `
       <td>${escapeHtml(fmtDate(row.created_at))}</td>
       <td>${escapeHtml(name)}</td>
@@ -115,10 +117,27 @@ async function loadPage(page = 1) {
       <td>${escapeHtml((row.doc_type || '—').replace(/_/g, ' '))}</td>
       <td><span class="badge ${badgeClass}">${escapeHtml(badgeText)}</span></td>
       <td>${fmtPct(row.confidence_score)}</td>
+      <td>
+        <button class="admin-btn small ${isDeleted ? '' : 'danger'}" data-action="${isDeleted ? 'restore' : 'delete'}" data-id="${row.id}">
+          ${isDeleted ? 'Restore' : 'Delete'}
+        </button>
+      </td>
     `;
     tr.addEventListener('click', () => { location.href = `detail?id=${row.id}`; });
+    tr.querySelector('[data-action]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleDeleteRestore(e.currentTarget.dataset.action, row.id);
+    });
     rowsEl.appendChild(tr);
   }
+}
+
+async function handleDeleteRestore(action, id) {
+  if (action === 'delete' && !confirm('Delete this verification? It stays recoverable for 4 days, then is permanently removed.')) return;
+  const path   = `/verifications/${id}${action === 'restore' ? '/restore' : ''}`;
+  const method = action === 'restore' ? 'POST' : 'DELETE';
+  await adminFetch(path, { method }).catch(() => {});
+  await loadPage(state.page);
 }
 
 document.getElementById('apply-btn').addEventListener('click', () => loadPage(1));

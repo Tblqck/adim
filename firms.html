@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <title>Admin · Manage Firms</title>
+</head>
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <div>
+        <h1>Manage Firms</h1>
+        <div class="sub">Onboard a new firm and generate its head-admin password</div>
+      </div>
+      <div class="review-actions">
+        <span class="sub" id="user-badge"></span>
+        <a class="admin-btn" href="list">Verifications</a>
+        <a class="admin-btn" href="api">API</a>
+        <button class="admin-btn" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <h3>New firm</h3>
+      <div class="field-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+        <div class="field-card">
+          <div class="label">Firm name</div>
+          <input type="text" id="f-name" class="edit-input" placeholder="Acme Compliance Ltd">
+        </div>
+        <div class="field-card">
+          <div class="label">Slug</div>
+          <input type="text" id="f-slug" class="edit-input" placeholder="acme-compliance">
+        </div>
+        <div class="field-card">
+          <div class="label">Head-admin password</div>
+          <div style="display:flex;gap:8px">
+            <input type="password" id="f-password" class="edit-input" placeholder="Generate or type one">
+            <button class="admin-btn" id="generate-password-btn" type="button" style="white-space:nowrap">Generate</button>
+            <button class="admin-btn" id="toggle-password-btn" type="button" style="white-space:nowrap">Show</button>
+            <button class="admin-btn" id="copy-password-btn" type="button" style="white-space:nowrap">Copy</button>
+          </div>
+        </div>
+      </div>
+      <button class="admin-btn primary" id="create-firm-btn" style="margin-top:16px">Create firm</button>
+      <div class="admin-note" id="create-error" style="display:none;margin-top:14px;background:rgba(255,85,117,0.08);border-color:rgba(255,85,117,0.3);color:#ff5575"></div>
+    </div>
+
+    <div id="new-firm-wrap"></div>
+
+    <div class="admin-panel">
+      <h3>Existing firms</h3>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Firm ID</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="admin-empty" id="empty" style="display:none">No firms yet — create the first one above.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="firms.js"></script>
+</body>
+</html>

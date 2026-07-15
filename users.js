@@ -1,7 +1,11 @@
-const rowsBody   = document.getElementById('rows');
-const emptyMsg    = document.getElementById('empty');
-const createBtn   = document.getElementById('create-btn');
-const errorBox     = document.getElementById('create-error');
+const rowsBody      = document.getElementById('rows');
+const emptyMsg      = document.getElementById('empty');
+const createBtn     = document.getElementById('create-btn');
+const errorBox      = document.getElementById('create-error');
+const passwordInput = document.getElementById('u-password');
+const generateBtn   = document.getElementById('generate-password-btn');
+const toggleBtn     = document.getElementById('toggle-password-btn');
+const copyBtn       = document.getElementById('copy-password-btn');
 
 function renderRows(users) {
   emptyMsg.style.display = users.length ? 'none' : '';
@@ -20,6 +24,9 @@ function renderRows(users) {
           ${u.active ? 'Disable' : 'Re-enable'}
         </button>
       </td>
+      <td>
+        <button class="admin-btn danger small" data-delete="${u.id}">Delete</button>
+      </td>
     </tr>
   `).join('');
 }
@@ -37,7 +44,7 @@ async function loadUsers() {
 async function createUser() {
   const username         = document.getElementById('u-username').value.trim().toLowerCase();
   const display_name     = document.getElementById('u-display-name').value.trim();
-  const password         = document.getElementById('u-password').value;
+  const password         = passwordInput.value;
   const can_create_users = document.getElementById('u-can-create-users').checked;
 
   errorBox.style.display = 'none';
@@ -63,7 +70,7 @@ async function createUser() {
     }
     document.getElementById('u-username').value = '';
     document.getElementById('u-display-name').value = '';
-    document.getElementById('u-password').value = '';
+    passwordInput.value = '';
     document.getElementById('u-can-create-users').checked = false;
     await loadUsers();
   } catch (_) {
@@ -83,6 +90,12 @@ async function toggleField(userId, field, currentValue) {
   await loadUsers();
 }
 
+async function deleteUser(userId, username) {
+  if (!confirm(`Delete the login for "${username}"? This can't be undone.`)) return;
+  await adminFetch(`/firm-users/${userId}`, { method: 'DELETE' }).catch(() => {});
+  await loadUsers();
+}
+
 rowsBody.addEventListener('click', (e) => {
   const createToggle = e.target.closest('[data-toggle-create]');
   if (createToggle) {
@@ -92,9 +105,18 @@ rowsBody.addEventListener('click', (e) => {
   const activeToggle = e.target.closest('[data-toggle-active]');
   if (activeToggle) {
     toggleField(activeToggle.dataset.toggleActive, 'active', activeToggle.dataset.current === 'true');
+    return;
+  }
+  const deleteBtn = e.target.closest('[data-delete]');
+  if (deleteBtn) {
+    const username = deleteBtn.closest('tr').querySelector('td').textContent;
+    deleteUser(deleteBtn.dataset.delete, username);
   }
 });
 
+wireGeneratePassword(generateBtn, passwordInput);
+wirePasswordVisibility(passwordInput, toggleBtn);
+wirePasswordCopy(passwordInput, copyBtn);
 createBtn.addEventListener('click', createUser);
 document.getElementById('logout-btn').addEventListener('click', async () => {
   await adminFetch('/logout', { method: 'POST' }).catch(() => {});
