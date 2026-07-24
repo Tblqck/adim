@@ -5,3 +5,6 @@ __pycache__/
 .env
 .env.local
 doc/
+design-export.zip
+DESIGN_EXPORT_REINTEGRATION.md
+DESIGN_EXPORT_MANIFEST.md
