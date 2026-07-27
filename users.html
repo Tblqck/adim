@@ -37,6 +37,7 @@
     </nav>
 
     <div class="admin-panel">
+      <h3>New employee</h3>
       <div class="field-grid">
         <div class="field-card">
           <div class="label">Username</div>
@@ -56,10 +57,13 @@
           </div>
         </div>
         <div class="field-card">
-          <div class="label">Can create users</div>
-          <label style="display:flex;align-items:center;gap:8px;height:100%">
-            <input type="checkbox" id="u-can-create-users">
-            <span class="sub">Let this employee create further employee logins</span>
+          <div class="label">Permissions</div>
+          <label class="switch-row">
+            <span class="switch">
+              <input type="checkbox" id="u-can-create-users">
+              <span class="switch-track"></span>
+            </span>
+            <span class="switch-text">Can create further employee logins</span>
           </label>
         </div>
       </div>
@@ -67,22 +71,25 @@
       <div class="admin-note" id="create-error" style="display:none;margin-top:14px;background:rgba(255,85,117,0.08);border-color:rgba(255,85,117,0.3);color:#ff5575"></div>
     </div>
 
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Display name</th>
-            <th>Can create users</th>
-            <th>Active</th>
-            <th>Created</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
-      <div class="admin-empty" id="empty" style="display:none">No employees yet — create the first one above.</div>
+    <div class="admin-panel">
+      <h3>Employees</h3>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Display name</th>
+              <th>Can create users</th>
+              <th>Active</th>
+              <th>Created</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="admin-empty" id="empty" style="display:none">No employees yet — create the first one above.</div>
+      </div>
     </div>
   </div>
 
