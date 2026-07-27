@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Admin · Employee Detail</title>
+</head>
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <a class="admin-brand" href="list">
+        <img src="idntory-logo.png" alt="idntory" class="admin-logo">
+        <div>
+          <h1 id="user-title">Employee</h1>
+          <div class="sub" id="user-sub">Loading…</div>
+        </div>
+      </a>
+      <div class="review-actions">
+        <span class="sub" id="user-badge"></span>
+        <button class="admin-btn" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+
+    <nav class="admin-nav">
+      <a href="list">Verifications</a>
+      <a href="document-check">Document Authenticity Check</a>
+      <a href="screen">PEP &amp; Sanctions Check</a>
+      <a href="generate-link">Generate Link</a>
+      <a href="kyb">KYB</a>
+      <a href="databases">Databases</a>
+      <a href="api">API</a>
+      <a href="users" id="users-nav-link" class="active">Manage Users</a>
+      <a href="firms" id="firms-nav-link" style="display:none">Firms</a>
+    </nav>
+
+    <div class="admin-error-banner" id="detail-error"></div>
+
+    <div class="admin-panel">
+      <h3>Employee</h3>
+      <div class="field-grid">
+        <div class="field-card">
+          <div class="label">Username</div>
+          <div class="value" id="d-username">—</div>
+        </div>
+        <div class="field-card">
+          <div class="label">Display name</div>
+          <div class="value" id="d-display-name">—</div>
+        </div>
+        <div class="field-card">
+          <div class="label">Can create users</div>
+          <span class="badge gray" id="d-can-create-badge">—</span>
+        </div>
+        <div class="field-card">
+          <div class="label">Status</div>
+          <span class="badge gray" id="d-active-badge">—</span>
+        </div>
+        <div class="field-card">
+          <div class="label">Created</div>
+          <div class="value" id="d-created" style="font-size:0.82rem;font-family:var(--a-mono);font-weight:400">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <h3>Actions</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="admin-btn" id="toggle-create-btn">Toggle create-users</button>
+        <button class="admin-btn" id="toggle-active-btn">Toggle active</button>
+        <button class="admin-btn danger" id="delete-btn">Delete login</button>
+      </div>
+      <div class="admin-note" id="action-error" style="display:none;margin-top:14px;background:rgba(255,85,117,0.08);border-color:rgba(255,85,117,0.3);color:#ff5575"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="user-detail.js"></script>
+</body>
+</html>

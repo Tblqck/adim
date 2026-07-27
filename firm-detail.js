@@ -28,7 +28,7 @@ async function loadFirm() {
       return;
     }
     const firms = (await resp.json()).items || [];
-    const firm = firms.find(f => f.id === firmId);
+    const firm = firms.find(f => String(f.id) === firmId);
     if (!firm) {
       showFatalError('Firm not found.');
       return;

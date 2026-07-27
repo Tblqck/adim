@@ -10,7 +10,7 @@ const copyBtn       = document.getElementById('copy-password-btn');
 function renderRows(users) {
   emptyMsg.style.display = users.length ? 'none' : '';
   rowsBody.innerHTML = users.map(u => `
-    <tr>
+    <tr data-id="${u.id}">
       <td>${escapeHtml(u.username)}</td>
       <td>${escapeHtml(u.display_name)}</td>
       <td><span class="badge ${u.can_create_users ? 'green' : 'gray'}">${u.can_create_users ? 'Yes' : 'No'}</span></td>
@@ -111,7 +111,10 @@ rowsBody.addEventListener('click', (e) => {
   if (deleteBtn) {
     const username = deleteBtn.closest('tr').querySelector('td').textContent;
     deleteUser(deleteBtn.dataset.delete, username);
+    return;
   }
+  const row = e.target.closest('tr[data-id]');
+  if (row) location.href = `user-detail?id=${row.dataset.id}`;
 });
 
 wireGeneratePassword(generateBtn, passwordInput);
