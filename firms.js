@@ -99,6 +99,26 @@ async function createFirm() {
   createBtn.disabled = true;
   createBtn.textContent = 'Creating…';
   try {
+    // Re-fetch rather than trust whatever's already rendered — this runs
+    // right before submit so a firm added moments ago (by this admin in
+    // another tab, or another super admin) still gets caught.
+    const existingResp = await adminFetch('/firms');
+    if (existingResp.ok) {
+      const existing = (await existingResp.json()).items || [];
+      const nameTaken = existing.some(f => f.name.trim().toLowerCase() === name.toLowerCase());
+      const slugTaken = existing.some(f => (f.slug || '').toLowerCase() === slug.toLowerCase());
+      if (nameTaken) {
+        errorBox.textContent = `A firm named "${name}" already exists.`;
+        errorBox.style.display = '';
+        return;
+      }
+      if (slugTaken) {
+        errorBox.textContent = `The slug "${slug}" is already in use by another firm.`;
+        errorBox.style.display = '';
+        return;
+      }
+    }
+
     const resp = await adminFetch('/firms', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
