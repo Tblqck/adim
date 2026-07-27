@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Admin · Firm Detail</title>
+</head>
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <a class="admin-brand" href="list">
+        <img src="idntory-logo.png" alt="idntory" class="admin-logo">
+        <div>
+          <h1 id="firm-title">Firm</h1>
+          <div class="sub" id="firm-sub">Loading…</div>
+        </div>
+      </a>
+      <div class="review-actions">
+        <span class="sub" id="user-badge"></span>
+        <a class="admin-btn" href="firms">← Back to firms</a>
+        <button class="admin-btn" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="admin-error-banner" id="firm-error"></div>
+
+    <div class="admin-panel">
+      <h3>Firm</h3>
+      <div class="field-grid">
+        <div class="field-card">
+          <div class="label">Name</div>
+          <div class="value" id="firm-name">—</div>
+        </div>
+        <div class="field-card">
+          <div class="label">Slug</div>
+          <div class="value" id="firm-slug">—</div>
+        </div>
+        <div class="field-card">
+          <div class="label">Firm ID</div>
+          <div class="value" id="firm-id-value" style="font-size:0.82rem;font-family:var(--a-mono);font-weight:400">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <h3>API key</h3>
+      <div class="field-card" style="margin-top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="label">Status</div>
+          <span class="badge gray" id="key-status-badge">Loading…</span>
+        </div>
+        <button class="admin-btn primary" id="rotate-btn">Generate / rotate key</button>
+      </div>
+      <div class="admin-note" id="key-error" style="display:none;margin-top:14px;background:rgba(255,85,117,0.08);border-color:rgba(255,85,117,0.3);color:#ff5575"></div>
+      <div id="new-key-wrap"></div>
+      <div class="admin-note" style="margin-top:14px">
+        Passwords and API keys are only ever shown once, right when they're created or rotated — the server never stores a form it can hand back later. There is no way to view this firm's existing password or key; rotating issues a brand new one and immediately invalidates the old one.
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="firm-detail.js"></script>
+</body>
+</html>

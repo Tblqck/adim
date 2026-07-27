@@ -12,7 +12,7 @@ const passwordInput = document.getElementById('f-password');
 function renderRows(firms) {
   emptyMsg.style.display = firms.length ? 'none' : '';
   rowsBody.innerHTML = firms.map(f => `
-    <tr>
+    <tr data-id="${f.id}">
       <td>${escapeHtml(f.name)}</td>
       <td>${escapeHtml(f.id)}</td>
       <td><button class="admin-btn danger small" data-delete="${f.id}">Delete</button></td>
@@ -37,9 +37,13 @@ async function deleteFirm(firmId, name) {
 
 rowsBody.addEventListener('click', (e) => {
   const deleteBtn = e.target.closest('[data-delete]');
-  if (!deleteBtn) return;
-  const name = deleteBtn.closest('tr').querySelector('td').textContent;
-  deleteFirm(deleteBtn.dataset.delete, name);
+  if (deleteBtn) {
+    const name = deleteBtn.closest('tr').querySelector('td').textContent;
+    deleteFirm(deleteBtn.dataset.delete, name);
+    return;
+  }
+  const row = e.target.closest('tr[data-id]');
+  if (row) location.href = `firm-detail?id=${row.dataset.id}`;
 });
 
 async function loadFirms() {
