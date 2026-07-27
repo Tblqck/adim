@@ -54,12 +54,18 @@
   font-size: 0.85rem;
 }
 
-.admin-brand {
+.admin-brand,
+a.admin-brand {
   display: flex;
   align-items: center;
   gap: 14px;
   min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
 }
+
+a.admin-brand:hover { opacity: 0.8; }
 
 .admin-logo {
   height: 34px;
@@ -111,6 +117,44 @@
 .admin-btn.small {
   padding: 5px 12px;
   font-size: 0.78rem;
+}
+
+/* ── Primary nav (pill bar under the topbar) ──────────────────────────── */
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: var(--a-panel);
+  border: 1px solid var(--a-border);
+  border-radius: 12px;
+  padding: 6px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.admin-nav a {
+  flex: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  color: var(--a-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.admin-nav a:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--a-text);
+}
+
+.admin-nav a.active {
+  background: rgba(59, 130, 246, 0.14);
+  color: var(--a-accent-2);
+  font-weight: 700;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* ── Review actions (detail topbar) ───────────────────────────────────── */
