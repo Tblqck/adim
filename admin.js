@@ -42,28 +42,19 @@ function wirePasswordCopy(input, copyBtn) {
   });
 }
 
+// Generated client-side with the Web Crypto CSPRNG — the backend has no
+// /generate-password endpoint (confirmed 404 from the actual API server),
+// and there's no real reason this needs a round trip anyway.
+function generateSecurePassword(length = 20) {
+  const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_=+';
+  const values = new Uint32Array(length);
+  crypto.getRandomValues(values);
+  return Array.from(values, v => charset[v % charset.length]).join('');
+}
+
 function wireGeneratePassword(generateBtn, input) {
-  generateBtn.addEventListener('click', async () => {
-    generateBtn.disabled = true;
-    generateBtn.textContent = 'Generating…';
-    try {
-      const resp = await adminFetch('/generate-password');
-      if (resp.ok) {
-        const data = await resp.json();
-        input.value = data.password || '';
-      } else {
-        // This used to fail silently — nothing happened and there was no
-        // way to tell why. Surface it so a real backend error is visible
-        // instead of looking indistinguishable from the button not working.
-        const body = await resp.json().catch(() => ({}));
-        alert(body.detail || `Couldn't generate a password (${resp.status}).`);
-      }
-    } catch (_) {
-      // adminFetch already redirected to login on 401
-    } finally {
-      generateBtn.disabled = false;
-      generateBtn.textContent = 'Generate';
-    }
+  generateBtn.addEventListener('click', () => {
+    input.value = generateSecurePassword();
   });
 }
 
