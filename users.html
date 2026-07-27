@@ -38,7 +38,7 @@
 
     <div class="admin-panel">
       <h3>New employee</h3>
-      <div class="field-grid">
+      <div class="field-grid" style="grid-template-columns:1fr 1fr 2fr auto">
         <div class="field-card">
           <div class="label">Username</div>
           <input type="text" id="u-username" class="edit-input" placeholder="jane">
@@ -56,14 +56,14 @@
             <button class="admin-btn" id="copy-password-btn" type="button" style="white-space:nowrap">Copy</button>
           </div>
         </div>
-        <div class="field-card">
+        <div class="field-card" style="display:flex;flex-direction:column;justify-content:center">
           <div class="label">Permissions</div>
           <label class="switch-row">
             <span class="switch">
               <input type="checkbox" id="u-can-create-users">
               <span class="switch-track"></span>
             </span>
-            <span class="switch-text">Can create further employee logins</span>
+            <span class="switch-text" style="white-space:nowrap">Create users</span>
           </label>
         </div>
       </div>
