@@ -51,6 +51,12 @@ function wireGeneratePassword(generateBtn, input) {
       if (resp.ok) {
         const data = await resp.json();
         input.value = data.password || '';
+      } else {
+        // This used to fail silently — nothing happened and there was no
+        // way to tell why. Surface it so a real backend error is visible
+        // instead of looking indistinguishable from the button not working.
+        const body = await resp.json().catch(() => ({}));
+        alert(body.detail || `Couldn't generate a password (${resp.status}).`);
       }
     } catch (_) {
       // adminFetch already redirected to login on 401
