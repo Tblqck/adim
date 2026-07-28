@@ -71,7 +71,10 @@ async function renderFirmFilter(containerId, onChange) {
   try {
     const resp = await adminFetch('/firms');
     if (!resp.ok) return;
-    firms = (await resp.json()).items || [];
+    // /firms includes soft-deleted rows (so the Firms page can show a
+    // Restore button) — exclude them here, picking a deleted firm to
+    // filter/manage data by isn't a meaningful action.
+    firms = ((await resp.json()).items || []).filter(f => !f.deleted_at);
   } catch (_) {
     return;
   }
