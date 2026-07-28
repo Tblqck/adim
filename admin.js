@@ -128,9 +128,14 @@ async function renderFirmFilter(containerId, onChange) {
 })();
 
 function verdictBadgeClass(verified, verdict) {
+  const v = (verdict || '').toLowerCase();
+  // Checked before the verified true/false split — "needs review" is
+  // deliberately neither a pass nor a confident fail (e.g. a low-quality ID
+  // photo where an automated no_match isn't trustworthy enough to act on),
+  // so it must not render as a flat red rejection alongside real failures.
+  if (v.includes('review')) return 'amber';
   if (verified === true) return 'green';
   if (verified === false) return 'red';
-  const v = (verdict || '').toLowerCase();
   if (v.includes('weak') || v.includes('warn')) return 'amber';
   return 'gray';
 }

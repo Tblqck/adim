@@ -14,6 +14,7 @@ function renderRows(firms) {
   rowsBody.innerHTML = firms.map(f => `
     <tr data-id="${f.id}">
       <td>${escapeHtml(f.name)}</td>
+      <td style="font-family:var(--a-mono);font-size:0.85rem">${escapeHtml(f.slug || '—')}</td>
       <td>${escapeHtml(f.id)}</td>
       <td><button class="admin-btn danger small" data-delete="${f.id}">Delete</button></td>
     </tr>
