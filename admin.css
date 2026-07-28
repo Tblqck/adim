@@ -391,7 +391,9 @@ a.admin-brand:hover { opacity: 0.8; }
   background: var(--a-panel);
   border: 1px solid var(--a-border);
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
@@ -570,6 +572,8 @@ a.admin-brand:hover { opacity: 0.8; }
 }
 
 .field-card .value { font-size: 0.95rem; font-weight: 600; }
+
+.password-row { display: flex; gap: 8px; }
 
 /* ── Toggle switch (permission fields, e.g. "Can create users") ─────────── */
 
@@ -955,4 +959,59 @@ a.admin-brand:hover { opacity: 0.8; }
   color: var(--a-muted);
   line-height: 1.6;
   word-break: break-word;
+}
+
+/* ── Responsive: phones ───────────────────────────────────────────────────
+   Everything above was built for a ~1180px desktop shell. Tables, the pill
+   nav, and a couple of fixed (non-auto-fit) field-grid layouts don't
+   reflow on their own at phone widths, so this section overrides them
+   explicitly rather than trying to redesign each page per breakpoint. */
+
+@media (max-width: 640px) {
+  .admin { padding: 12px; }
+
+  .admin-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .admin-logo   { height: 26px; }
+  .admin-topbar h1   { font-size: 1.05rem; }
+  .admin-topbar .sub { font-size: 0.78rem; }
+
+  .review-actions { width: 100%; justify-content: space-between; }
+
+  /* The pill nav wrapping into 3-4 rows of buttons is the single biggest
+     "looks bad on phone" offender — turn it into a swipeable single row
+     instead, same pattern as a mobile tab bar. */
+  .admin-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .admin-nav::-webkit-scrollbar { display: none; }
+  .admin-nav a { padding: 8px 12px; font-size: 0.8rem; }
+
+  /* Force single-column even where a page set a fixed (non-auto-fit)
+     track pattern inline, e.g. users.html's "1fr 1fr 2fr auto" — an
+     external !important is one of the few things that beats an inline
+     style, short of editing every page's markup individually. */
+  .field-grid { grid-template-columns: 1fr !important; }
+
+  .password-row { flex-wrap: wrap; }
+  .password-row .edit-input { width: 100%; }
+  .password-row .admin-btn  { flex: 1; }
+
+  .admin-table       { font-size: 0.8rem; }
+  .admin-table th,
+  .admin-table td    { padding: 9px 10px; }
+
+  .db-registry-tab { min-width: 0; }
+  .image-grid      { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+
+  .admin-login-card { padding: 24px 20px; }
 }

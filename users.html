@@ -36,6 +36,8 @@
       <a href="firms" id="firms-nav-link" style="display:none">Firms</a>
     </nav>
 
+    <div class="admin-note" id="firm-login-note" style="display:none"></div>
+
     <div class="admin-panel">
       <h3>New employee</h3>
       <div class="field-grid" style="grid-template-columns:1fr 1fr 2fr auto">
@@ -49,7 +51,7 @@
         </div>
         <div class="field-card">
           <div class="label">Password</div>
-          <div style="display:flex;gap:8px">
+          <div class="password-row">
             <input type="password" id="u-password" class="edit-input" placeholder="Choose a password">
             <button class="admin-btn" id="generate-password-btn" type="button" style="white-space:nowrap">Generate</button>
             <button class="admin-btn" id="toggle-password-btn" type="button" style="white-space:nowrap">Show</button>

@@ -9,26 +9,31 @@ const copyBtn       = document.getElementById('copy-password-btn');
 
 function renderRows(users) {
   emptyMsg.style.display = users.length ? 'none' : '';
-  rowsBody.innerHTML = users.map(u => `
-    <tr data-id="${u.id}">
+  rowsBody.innerHTML = users.map(u => {
+    const isDeleted = !!u.deleted_at;
+    return `
+    <tr data-id="${u.id}" class="${isDeleted ? 'row-deleted' : ''}">
       <td>${escapeHtml(u.username)}</td>
       <td>${escapeHtml(u.display_name)}</td>
       <td><span class="badge ${u.can_create_users ? 'green' : 'gray'}">${u.can_create_users ? 'Yes' : 'No'}</span></td>
       <td><span class="badge ${u.active ? 'green' : 'red'}">${u.active ? 'Active' : 'Disabled'}</span></td>
       <td>${new Date(u.created_at).toLocaleDateString()}</td>
       <td>
-        <button class="admin-btn" data-toggle-create="${u.id}" data-current="${u.can_create_users}">
+        <button class="admin-btn" data-toggle-create="${u.id}" data-current="${u.can_create_users}" ${isDeleted ? 'disabled' : ''}>
           ${u.can_create_users ? 'Revoke create-users' : 'Allow create-users'}
         </button>
-        <button class="admin-btn" data-toggle-active="${u.id}" data-current="${u.active}">
+        <button class="admin-btn" data-toggle-active="${u.id}" data-current="${u.active}" ${isDeleted ? 'disabled' : ''}>
           ${u.active ? 'Disable' : 'Re-enable'}
         </button>
       </td>
       <td>
-        <button class="admin-btn danger small" data-delete="${u.id}">Delete</button>
+        <button class="admin-btn small ${isDeleted ? '' : 'danger'}" data-action="${isDeleted ? 'restore' : 'delete'}" data-id="${u.id}">
+          ${isDeleted ? 'Restore' : 'Delete'}
+        </button>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 async function loadUsers() {
@@ -36,6 +41,23 @@ async function loadUsers() {
     const resp = await adminFetch('/firm-users');
     if (!resp.ok) return;
     renderRows((await resp.json()).items || []);
+  } catch (_) {
+    // adminFetch already redirected to login on 401
+  }
+}
+
+// Employee login needs firm name + username + password — the firm name is
+// easy to forget it's a separate field from "which employee", so surface it
+// here rather than making people dig through the Firms page to find it.
+async function loadFirmLoginInfo() {
+  const note = document.getElementById('firm-login-note');
+  try {
+    const resp = await adminFetch('/me');
+    if (!resp.ok) return;
+    const me = await resp.json();
+    if (!me.firm_name) return;
+    note.innerHTML = `Employees log in with <b>Firm: ${escapeHtml(me.firm_name)}</b>, their own <b>Username</b> (shown below), and their password.`;
+    note.style.display = '';
   } catch (_) {
     // adminFetch already redirected to login on 401
   }
@@ -90,9 +112,11 @@ async function toggleField(userId, field, currentValue) {
   await loadUsers();
 }
 
-async function deleteUser(userId, username) {
-  if (!confirm(`Delete the login for "${username}"? This can't be undone.`)) return;
-  await adminFetch(`/firm-users/${userId}`, { method: 'DELETE' }).catch(() => {});
+async function handleDeleteRestore(action, userId, username) {
+  if (action === 'delete' && !confirm(`Delete the login for "${username}"? It stops working immediately. It stays recoverable for 3 days, then is permanently removed.`)) return;
+  const path   = `/firm-users/${userId}${action === 'restore' ? '/restore' : ''}`;
+  const method = action === 'restore' ? 'POST' : 'DELETE';
+  await adminFetch(path, { method }).catch(() => {});
   await loadUsers();
 }
 
@@ -107,10 +131,10 @@ rowsBody.addEventListener('click', (e) => {
     toggleField(activeToggle.dataset.toggleActive, 'active', activeToggle.dataset.current === 'true');
     return;
   }
-  const deleteBtn = e.target.closest('[data-delete]');
-  if (deleteBtn) {
-    const username = deleteBtn.closest('tr').querySelector('td').textContent;
-    deleteUser(deleteBtn.dataset.delete, username);
+  const actionBtn = e.target.closest('[data-action]');
+  if (actionBtn) {
+    const username = actionBtn.closest('tr').querySelector('td').textContent;
+    handleDeleteRestore(actionBtn.dataset.action, actionBtn.dataset.id, username);
     return;
   }
   const row = e.target.closest('tr[data-id]');
@@ -127,3 +151,4 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
 });
 
 loadUsers();
+loadFirmLoginInfo();

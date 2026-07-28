@@ -11,23 +11,31 @@ const passwordInput = document.getElementById('f-password');
 
 function renderRows(firms) {
   emptyMsg.style.display = firms.length ? 'none' : '';
-  rowsBody.innerHTML = firms.map(f => `
-    <tr data-id="${f.id}">
+  rowsBody.innerHTML = firms.map(f => {
+    const isDeleted = !!f.deleted_at;
+    return `
+    <tr data-id="${f.id}" class="${isDeleted ? 'row-deleted' : ''}">
       <td>${escapeHtml(f.name)}</td>
       <td style="font-family:var(--a-mono);font-size:0.85rem">${escapeHtml(f.slug || '—')}</td>
       <td>${escapeHtml(f.id)}</td>
-      <td><button class="admin-btn danger small" data-delete="${f.id}">Delete</button></td>
+      <td>
+        <button class="admin-btn small ${isDeleted ? '' : 'danger'}" data-action="${isDeleted ? 'restore' : 'delete'}" data-id="${f.id}">
+          ${isDeleted ? 'Restore' : 'Delete'}
+        </button>
+      </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
-async function deleteFirm(firmId, name) {
-  if (!confirm(`Delete firm "${name}"? This can't be undone.`)) return;
+async function handleDeleteRestore(action, firmId, name) {
+  if (action === 'delete' && !confirm(`Delete firm "${name}"? All of its sessions and API keys stop working immediately. It stays recoverable for 3 days, then is permanently removed.`)) return;
   try {
-    const resp = await adminFetch(`/firms/${firmId}`, { method: 'DELETE' });
+    const path = `/firms/${firmId}${action === 'restore' ? '/restore' : ''}`;
+    const resp = await adminFetch(path, { method: action === 'restore' ? 'POST' : 'DELETE' });
     if (!resp.ok) {
       const body = await resp.json().catch(() => ({}));
-      alert(body.detail || `Delete failed (${resp.status}) — the firm may still have verification records tied to it.`);
+      alert(body.detail || `${action === 'restore' ? 'Restore' : 'Delete'} failed (${resp.status})`);
       return;
     }
     await loadFirms();
@@ -37,10 +45,10 @@ async function deleteFirm(firmId, name) {
 }
 
 rowsBody.addEventListener('click', (e) => {
-  const deleteBtn = e.target.closest('[data-delete]');
-  if (deleteBtn) {
-    const name = deleteBtn.closest('tr').querySelector('td').textContent;
-    deleteFirm(deleteBtn.dataset.delete, name);
+  const actionBtn = e.target.closest('[data-action]');
+  if (actionBtn) {
+    const name = actionBtn.closest('tr').querySelector('td').textContent;
+    handleDeleteRestore(actionBtn.dataset.action, actionBtn.dataset.id, name);
     return;
   }
   const row = e.target.closest('tr[data-id]');
