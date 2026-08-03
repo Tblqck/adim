@@ -51,9 +51,36 @@ function isCorrected(row, key) {
   return !!(row.corrected_fields && row.corrected_fields[key]);
 }
 
+// Sources from pipeline_response.mrz_by_side (front + back, each independently
+// detected/parsed) rather than the old pipeline_response.mrz.fields/.raw_lines
+// shape -- that shape hasn't existed on the backend for a while (it moved to
+// the current AI-server pipeline's mrz_check format), so this always
+// silently returned null and the whole MRZ/cross-check UI showed "no MRZ"
+// unconditionally, on every verification, regardless of doc type or whether
+// an MRZ was actually found and parsed. mrz_by_side isn't present on
+// verifications created before that fix shipped -- those still correctly
+// show "no MRZ" here, since there's genuinely nothing to read for them.
 function mrzFields(row) {
-  const mrz = row.pipeline_response && row.pipeline_response.mrz;
-  return mrz && mrz.fields ? mrz.fields : null;
+  const bySide = row.pipeline_response && row.pipeline_response.mrz_by_side;
+  if (!bySide) return null;
+  const parsedSide = ['front', 'back'].map(s => bySide[s]).find(m => m && m.parsed);
+  if (!parsedSide) return null;
+  return {
+    passport_number: parsedSide.document_number || null,
+    date_of_birth:   parsedSide.date_of_birth_normalized || parsedSide.date_of_birth || null,
+    surname:         parsedSide.surname || null,
+    given_names:     parsedSide.given_names || null,
+    expiry_date:     parsedSide.expiry_date_normalized || parsedSide.expiry_date || null,
+    nationality:     parsedSide.nationality || null,
+    format:          parsedSide.format || null,
+    checksum_valid:  parsedSide.checksum_valid || {},
+  };
+}
+
+function mrzSideBadge(sideResult) {
+  if (!sideResult) return '<span class="badge gray">No MRZ zone detected</span>';
+  if (sideResult.parsed) return `<span class="badge green">✓ Parsed (${escapeHtml(sideResult.format || '')})</span>`;
+  return '<span class="badge amber">Detected, unreadable</span>';
 }
 
 // ── Review status / actions ─────────────────────────────────────────────
@@ -305,7 +332,7 @@ function renderScores(row) {
         ${scoreCard('Face match', row.face_match_score, row.face_match_verdict, 'ArcFace R50 (w600k_r50.onnx) — cosine similarity vs ID photo')}
         ${scoreCard('Liveness', row.liveness_score, row.liveness_verdict, row.liveness_method === 'onnx' ? 'MiniFASNetV2.onnx (real anti-spoofing model)' : 'Heuristic fallback — Laplacian sharpness, NOT the ONNX anti-spoofing model')}
         ${scoreCard('Document match', row.document_match_score, row.document_match_verdict, 'ORB + colour histogram vs cached reference images')}
-        ${row.mrz_verdict ? scoreCard('MRZ validation', null, row.mrz_verdict, 'ICAO 9303 checksum validation (passport only)') : ''}
+        ${row.mrz_verdict ? scoreCard('MRZ validation', null, row.mrz_verdict, 'ICAO 9303 checksum validation') : ''}
       </div>
     </div>
 
@@ -330,25 +357,28 @@ function renderScores(row) {
 // ── MRZ tab ──────────────────────────────────────────────────────────────
 
 function renderMrz(row) {
-  const mrz = row.pipeline_response && row.pipeline_response.mrz;
-  if (!mrz || !mrz.raw_lines || mrz.raw_lines.length < 2) {
-    panels.mrz.innerHTML = `<div class="admin-panel"><div class="admin-note">Not applicable — MRZ is only present on passports, and none was extracted for this verification.</div></div>`;
+  const bySide = row.pipeline_response && row.pipeline_response.mrz_by_side;
+  const mrz = mrzFields(row);
+  if (!bySide || !mrz) {
+    panels.mrz.innerHTML = `<div class="admin-panel"><div class="admin-note">No MRZ zone was detected on either side of this document (or this verification predates per-side MRZ capture).</div></div>`;
     return;
   }
-  const fields = mrz.fields || {};
-  const checks = mrz.checks || {};
 
   panels.mrz.innerHTML = `
     <div class="admin-panel">
-      <h3>Embedded OCR machine-readable lines</h3>
-      <div class="mrz-block">01  ${escapeHtml(mrz.raw_lines[0])}\n02  ${escapeHtml(mrz.raw_lines[1])}</div>
-      <div class="admin-note" style="margin-top:12px">Format detected: TD3 ICAO document structure (44 chars/row)</div>
+      <h3>MRZ detection by side</h3>
+      <div class="field-grid">
+        <div class="field-card"><div class="label">Front</div><div class="value">${mrzSideBadge(bySide.front)}</div></div>
+        <div class="field-card"><div class="label">Back</div><div class="value">${mrzSideBadge(bySide.back)}</div></div>
+      </div>
+      ${bySide.expected_side ? `<div class="admin-note" style="margin-top:8px">Expected MRZ side for this country/doc type: <b>${escapeHtml(bySide.expected_side)}</b></div>` : ''}
     </div>
 
     <div class="admin-panel">
       <h3>Check digit validation</h3>
-      <div class="field-grid">
-        ${Object.entries(checks).map(([k, ok]) => `
+      <div class="admin-note">Format detected: ${escapeHtml(mrz.format || '—')}</div>
+      <div class="field-grid" style="margin-top:12px">
+        ${Object.entries(mrz.checksum_valid).map(([k, ok]) => `
           <div class="field-card">
             <div class="label">${escapeHtml(k.replace(/_/g, ' '))}</div>
             <div class="value"><span class="badge ${ok ? 'green' : 'red'}">${ok ? '✓ Passed' : '✗ Failed'}</span></div>
@@ -360,12 +390,12 @@ function renderMrz(row) {
     <div class="admin-panel">
       <h3>Extracted sovereign identity profile</h3>
       <div class="field-grid">
-        <div class="field-card"><div class="label">Given name</div><div class="value">${escapeHtml(fields.given_names || '—')}</div></div>
-        <div class="field-card"><div class="label">Surname</div><div class="value">${escapeHtml(fields.surname || '—')}</div></div>
-        <div class="field-card"><div class="label">Date of birth</div><div class="value">${escapeHtml(fields.date_of_birth || '—')}</div></div>
-        <div class="field-card"><div class="label">Nationality</div><div class="value">${escapeHtml(fields.nationality || '—')}</div></div>
-        <div class="field-card"><div class="label">Date of expiry</div><div class="value">${escapeHtml(fields.expiry_date || '—')}</div></div>
-        <div class="field-card"><div class="label">Document number</div><div class="value">${escapeHtml(fields.passport_number || '—')}</div></div>
+        <div class="field-card"><div class="label">Given name</div><div class="value">${escapeHtml(mrz.given_names || '—')}</div></div>
+        <div class="field-card"><div class="label">Surname</div><div class="value">${escapeHtml(mrz.surname || '—')}</div></div>
+        <div class="field-card"><div class="label">Date of birth</div><div class="value">${escapeHtml(mrz.date_of_birth || '—')}</div></div>
+        <div class="field-card"><div class="label">Nationality</div><div class="value">${escapeHtml(mrz.nationality || '—')}</div></div>
+        <div class="field-card"><div class="label">Date of expiry</div><div class="value">${escapeHtml(mrz.expiry_date || '—')}</div></div>
+        <div class="field-card"><div class="label">Document number</div><div class="value">${escapeHtml(mrz.passport_number || '—')}</div></div>
       </div>
     </div>
   `;
