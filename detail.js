@@ -403,6 +403,73 @@ function renderMrz(row) {
 
 // ── Cross-check tab ──────────────────────────────────────────────────────
 
+// MRZ nationality is always an ISO 3166-1 alpha-3 code ("NGA"); printed OCR
+// text is whatever the card actually shows, which is almost never that code
+// -- usually the demonym ("NIGERIAN") or the full country name ("NIGERIA",
+// "FEDERAL REPUBLIC OF NIGERIA"). Plain textMatches has zero chance of
+// connecting those (no shared substring/token at all), so every card was
+// flagging a real, correct nationality as "Mismatch / incomplete" -- not an
+// OCR error, just two conventions the generic comparator never reconciles.
+// Keyed by the alpha-3 code since that's what's actually in mrz.fields.
+// NOT exhaustive (demonyms are irregular and some codes are ambiguous, e.g.
+// "Congolese" for both Congo-Brazzaville and DR Congo) -- extend as real
+// mismatches surface, same "fix on contact with a real card" pattern the
+// OCR rules use.
+const NATIONALITY_ALIASES = {
+  NGA: ['NIGERIAN', 'NIGERIA'],
+  GBR: ['BRITISH', 'UNITED KINGDOM', 'UK'],
+  USA: ['AMERICAN', 'UNITED STATES', 'US'],
+  DEU: ['GERMAN', 'GERMANY'],
+  FRA: ['FRENCH', 'FRANCE'],
+  ITA: ['ITALIAN', 'ITALY'],
+  ESP: ['SPANISH', 'SPAIN'],
+  PRT: ['PORTUGUESE', 'PORTUGAL'],
+  NLD: ['DUTCH', 'NETHERLANDS'],
+  BEL: ['BELGIAN', 'BELGIUM'],
+  POL: ['POLISH', 'POLAND'],
+  ROU: ['ROMANIAN', 'ROMANIA'],
+  CAN: ['CANADIAN', 'CANADA'],
+  BRA: ['BRAZILIAN', 'BRAZIL'],
+  MEX: ['MEXICAN', 'MEXICO'],
+  IND: ['INDIAN', 'INDIA'],
+  CYP: ['CYPRIOT', 'CYPRUS'],
+  GRC: ['GREEK', 'GREECE'],
+  TUR: ['TURKISH', 'TURKEY', 'TURKIYE'],
+  IRL: ['IRISH', 'IRELAND'],
+  CHE: ['SWISS', 'SWITZERLAND'],
+  SWE: ['SWEDISH', 'SWEDEN'],
+  NOR: ['NORWEGIAN', 'NORWAY'],
+  DNK: ['DANISH', 'DENMARK'],
+  FIN: ['FINNISH', 'FINLAND'],
+  AUT: ['AUSTRIAN', 'AUSTRIA'],
+  CZE: ['CZECH', 'CZECHIA'],
+  HUN: ['HUNGARIAN', 'HUNGARY'],
+  UKR: ['UKRAINIAN', 'UKRAINE'],
+  RUS: ['RUSSIAN', 'RUSSIA'],
+  CHN: ['CHINESE', 'CHINA'],
+  JPN: ['JAPANESE', 'JAPAN'],
+  KOR: ['KOREAN', 'KOREA'],
+  PHL: ['FILIPINO', 'FILIPINA', 'PHILIPPINES'],
+  IDN: ['INDONESIAN', 'INDONESIA'],
+  VNM: ['VIETNAMESE', 'VIETNAM'],
+  THA: ['THAI', 'THAILAND'],
+  PAK: ['PAKISTANI', 'PAKISTAN'],
+  BGD: ['BANGLADESHI', 'BANGLADESH'],
+  ZAF: ['SOUTH AFRICAN', 'SOUTH AFRICA'],
+  KEN: ['KENYAN', 'KENYA'],
+  GHA: ['GHANAIAN', 'GHANA'],
+  EGY: ['EGYPTIAN', 'EGYPT'],
+  ETH: ['ETHIOPIAN', 'ETHIOPIA'],
+  MAR: ['MOROCCAN', 'MOROCCO'],
+  DZA: ['ALGERIAN', 'ALGERIA'],
+  SAU: ['SAUDI', 'SAUDI ARABIAN', 'SAUDI ARABIA'],
+  ARE: ['EMIRATI', 'UNITED ARAB EMIRATES', 'UAE'],
+  IRN: ['IRANIAN', 'IRAN'],
+  IRQ: ['IRAQI', 'IRAQ'],
+  AUS: ['AUSTRALIAN', 'AUSTRALIA'],
+  NZL: ['NEW ZEALAND', 'KIWI'],
+};
+
 function renderCross(row) {
   const ocr = (row.pipeline_response && row.pipeline_response.ocr_fields) || {};
   const mrz = mrzFields(row);
@@ -413,7 +480,7 @@ function renderCross(row) {
     ['Surname',         ['surname'],                  'surname',         'text'],
     ['Given names',     ['given_names'],               'given_names',    'text'],
     ['Date of expiry',  ['expiry', 'expiry_date'],     'expiry_date',    'date'],
-    ['Nationality',     ['nationality'],               'nationality',    'text'],
+    ['Nationality',     ['nationality'],               'nationality',    'nationality'],
   ];
 
   // Printed OCR text is often bilingual / differently formatted than the
@@ -431,6 +498,18 @@ function renderCross(row) {
     if (isNaN(da) || isNaN(db)) return textMatches(a, b);
     return da.toISOString().slice(0, 10) === db.toISOString().slice(0, 10);
   };
+  // mrzVal here is the raw ISO alpha-3 code ("NGA"); ocrVal is whatever the
+  // card printed (demonym or country name). Falls back to plain textMatches
+  // first (handles the rare card that prints the alpha-3 code itself), then
+  // checks the alias table, then finally accepts a bare textMatches against
+  // the alias forms too (so OCR noise like "NIGERIAN " still resolves).
+  const nationalityMatches = (ocrVal, mrzCode) => {
+    if (textMatches(ocrVal, mrzCode)) return true;
+    const aliases = NATIONALITY_ALIASES[normText(mrzCode)];
+    if (!aliases) return false;
+    const na = normText(ocrVal);
+    return aliases.some(alias => na.includes(alias) || alias.includes(na));
+  };
 
   const body = rows.map(([label, ocrKeys, mrzKey, kind]) => {
     const ocrVal = ocrKeys.map(k => ocr[k]).find(Boolean) || null;
@@ -444,7 +523,11 @@ function renderCross(row) {
         <td colspan="2">No MRZ available — OCR value only</td>
       </tr>`;
     }
-    const match = ocrVal && mrzVal && (kind === 'date' ? dateMatches(ocrVal, mrzVal) : textMatches(ocrVal, mrzVal));
+    const match = ocrVal && mrzVal && (
+      kind === 'date' ? dateMatches(ocrVal, mrzVal) :
+      kind === 'nationality' ? nationalityMatches(ocrVal, mrzVal) :
+      textMatches(ocrVal, mrzVal)
+    );
     return `<tr>
       <td>${escapeHtml(label)}</td>
       <td class="mono">${escapeHtml(ocrVal || '—')}</td>
