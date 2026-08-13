@@ -16,10 +16,21 @@ function updateGenerateAvailability() {
   generateHint.style.display = selectedFirmId ? 'none' : '';
 }
 
-function statusBadgeClass(status) {
-  if (status === 'used') return 'green';
-  if (status === 'expired') return 'red';
-  return 'blue'; // pending
+// Link lifecycle, derived client-side from status/opened_at/expires_at —
+// the backend only tracks two hard states (pending/used); "opened" is a
+// soft, informational layer on top so an admin can tell "never opened",
+// "opened but abandoned mid-capture", and "expired before anyone tried it"
+// apart at a glance, instead of every un-submitted link looking identical.
+function linkLifecycle(row) {
+  const expired = new Date(row.expires_at) < new Date();
+  if (row.status === 'used') return { label: 'Submitted', cls: 'green' };
+  if (expired) {
+    return row.opened_at
+      ? { label: 'Expired — opened, not submitted', cls: 'red' }
+      : { label: 'Expired — never opened', cls: 'gray' };
+  }
+  if (row.opened_at) return { label: 'Opened — not submitted', cls: 'amber' };
+  return { label: 'Pending — not opened', cls: 'blue' };
 }
 
 function renderNewLink(data) {
@@ -121,6 +132,7 @@ async function loadLinks() {
               <th>Created</th>
               <th>Applicant ref</th>
               <th>Status</th>
+              <th>Opened</th>
               <th>Expires</th>
               <th></th>
             </tr>
@@ -128,11 +140,13 @@ async function loadLinks() {
           <tbody>
             ${items.map(row => {
               const isDeleted = !!row.deleted_at;
+              const lc = linkLifecycle(row);
               return `
               <tr class="${isDeleted ? 'row-deleted' : ''}" style="cursor:default">
                 <td>${escapeHtml(fmtDate(row.created_at))}</td>
                 <td>${escapeHtml(row.user_ref || '—')}</td>
-                <td><span class="badge ${statusBadgeClass(row.status)}">${escapeHtml(row.status)}</span></td>
+                <td><span class="badge ${lc.cls}">${escapeHtml(lc.label)}</span></td>
+                <td>${row.opened_at ? escapeHtml(fmtDate(row.opened_at)) : '—'}</td>
                 <td>${escapeHtml(fmtDate(row.expires_at))}</td>
                 <td>
                   <button class="admin-btn small ${isDeleted ? '' : 'danger'}" data-action="${isDeleted ? 'restore' : 'delete'}" data-id="${row.id}">

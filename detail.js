@@ -108,6 +108,22 @@ function collectCorrections() {
   return corrections;
 }
 
+// Mirrors collectCorrections() for the verdict <select>s scoreCard() renders
+// while editing. An empty selection means "back to no override" — sent as
+// null so the server clears that key instead of storing a blank string.
+function collectVerdictOverrides() {
+  const overrides = {};
+  document.querySelectorAll('[data-override-field]').forEach((select) => {
+    const key      = select.dataset.overrideField;
+    const value    = select.value;
+    const original = select.dataset.original || '';
+    if (value !== original) {
+      overrides[key] = value || null;
+    }
+  });
+  return overrides;
+}
+
 // ── Inline error banner + field shake/highlight ─────────────────────────
 
 function clearFormError() {
@@ -137,13 +153,24 @@ function showFormError(message, highlightId) {
 
 async function submitReview(verified) {
   clearFormError();
-  const corrected_fields = editing ? collectCorrections() : undefined;
-  if (verified === undefined && (!corrected_fields || !Object.keys(corrected_fields).length)) {
+  // The server requires reviewed_by on every review PATCH — this dashboard
+  // never had a manual "reviewed by" input, so pull it from what login.html
+  // already stored in sessionStorage (same source #user-badge reads from
+  // in admin.js) rather than adding one. Falls back to 'admin' only if
+  // that's somehow unset, so the request can never go out with an empty
+  // required field.
+  const reviewedBy = sessionStorage.getItem('kyc_display_name') || 'admin';
+
+  const corrected_fields  = editing ? collectCorrections() : undefined;
+  const verdict_overrides = editing ? collectVerdictOverrides() : undefined;
+  const hasCorrections = corrected_fields  && Object.keys(corrected_fields).length;
+  const hasOverrides   = verdict_overrides && Object.keys(verdict_overrides).length;
+  if (verified === undefined && !hasCorrections && !hasOverrides) {
     showFormError('No changed values to save.');
     return;
   }
 
-  const body = { corrected_fields };
+  const body = { reviewed_by: reviewedBy, corrected_fields, verdict_overrides };
   if (verified !== undefined) body.verified = verified;
 
   const resp = await adminFetch(`/verifications/${id}`, {
@@ -169,7 +196,10 @@ document.getElementById('edit-btn').addEventListener('click', () => {
   editing = !editing;
   document.getElementById('edit-btn').textContent = editing ? 'Cancel edit' : 'Edit values';
   document.getElementById('save-btn').style.display = editing ? '' : 'none';
-  if (currentRow) renderOverview(currentRow);
+  if (currentRow) {
+    renderOverview(currentRow);
+    renderScores(currentRow);
+  }
 });
 
 // ── Overview ─────────────────────────────────────────────────────────────
@@ -310,12 +340,42 @@ document.addEventListener('keydown', (e) => {
 
 // ── Model Scores tab ─────────────────────────────────────────────────────
 
-function scoreCard(label, score, verdict, modelLabel, extraBadge) {
+// Fixed vocabularies for the three per-check verdicts an admin can override
+// (must match the server's admin.py _OVERRIDABLE_VERDICT_FIELDS). Not
+// overall_verdict/pass-fail — the Approve/Reject buttons (`verified`)
+// already cover that.
+const VERDICT_OPTIONS = {
+  mrz_verdict:             ['valid', 'valid_with_warnings', 'tampered', 'error'],
+  face_match_verdict:      ['strong_match', 'likely_match', 'weak_match', 'possible_match', 'no_match', 'skipped', 'error'],
+  document_match_verdict:  ['strong_match', 'likely_match', 'weak_match', 'no_match', 'no_refs', 'error'],
+};
+
+// row/verdictKey are optional — pass both to make a card overridable
+// (Face match, Document match, MRZ); omit for one that isn't (Liveness).
+function scoreCard(label, score, verdict, modelLabel, row, verdictKey) {
+  const options    = verdictKey && VERDICT_OPTIONS[verdictKey];
+  const overridden = !!(row && row.verdict_overrides && row.verdict_overrides[verdictKey]);
+  const effective  = overridden ? row.verdict_overrides[verdictKey] : verdict;
+
+  const badgeHtml = effective
+    ? `<span class="badge ${verdictBadgeClass(null, effective)}" style="margin-left:6px">${escapeHtml(effective.replace(/_/g, ' '))}</span>` +
+      (overridden ? ' <span class="badge blue" style="margin-left:4px">overridden</span>' : '')
+    : '';
+
+  const editorHtml = editing && options ? `
+    <div style="margin-top:8px">
+      <select class="edit-input" data-override-field="${verdictKey}" data-original="${overridden ? row.verdict_overrides[verdictKey] : ''}">
+        <option value="">${verdict ? 'No override (AI: ' + escapeHtml(verdict.replace(/_/g, ' ')) + ')' : 'No override'}</option>
+        ${options.map(v => `<option value="${v}" ${overridden && row.verdict_overrides[verdictKey] === v ? 'selected' : ''}>${escapeHtml(v.replace(/_/g, ' '))}</option>`).join('')}
+      </select>
+    </div>` : '';
+
   return `
     <div class="field-card">
       <div class="label">${escapeHtml(label)}</div>
-      <div class="value">${fmtPct(score)} ${verdict ? `<span class="badge ${verdictBadgeClass(null, verdict)}" style="margin-left:6px">${escapeHtml(verdict.replace(/_/g, ' '))}</span>` : ''}</div>
-      <div class="admin-note" style="margin:8px 0 0;padding:6px 10px">${escapeHtml(modelLabel)}${extraBadge ? ' · ' + extraBadge : ''}</div>
+      <div class="value">${fmtPct(score)} ${badgeHtml}</div>
+      <div class="admin-note" style="margin:8px 0 0;padding:6px 10px">${escapeHtml(modelLabel)}</div>
+      ${editorHtml}
     </div>`;
 }
 
@@ -326,13 +386,13 @@ function renderScores(row) {
 
   panels.scores.innerHTML = `
     <div class="admin-panel">
-      <h3>Per-model results</h3>
+      <h3>Per-model results ${editing ? '<span class="admin-note" style="display:inline-block;margin:0 0 0 10px;padding:2px 8px">Editing — pick an override, then Approve/Reject/Save to apply</span>' : ''}</h3>
       <div class="admin-note">Each score is tagged with the model or method that actually produced it, so a "heuristic" fallback score can be weighted differently from a real ONNX model result.</div>
       <div class="field-grid">
-        ${scoreCard('Face match', row.face_match_score, row.face_match_verdict, 'ArcFace R50 (w600k_r50.onnx) — cosine similarity vs ID photo')}
+        ${scoreCard('Face match', row.face_match_score, row.face_match_verdict, 'ArcFace R50 (w600k_r50.onnx) — cosine similarity vs ID photo', row, 'face_match_verdict')}
         ${scoreCard('Liveness', row.liveness_score, row.liveness_verdict, row.liveness_method === 'onnx' ? 'MiniFASNetV2.onnx (real anti-spoofing model)' : 'Heuristic fallback — Laplacian sharpness, NOT the ONNX anti-spoofing model')}
-        ${scoreCard('Document match', row.document_match_score, row.document_match_verdict, 'ORB + colour histogram vs cached reference images')}
-        ${row.mrz_verdict ? scoreCard('MRZ validation', null, row.mrz_verdict, 'ICAO 9303 checksum validation') : ''}
+        ${scoreCard('Document match', row.document_match_score, row.document_match_verdict, 'ORB + colour histogram vs cached reference images', row, 'document_match_verdict')}
+        ${(row.mrz_verdict || (row.verdict_overrides && row.verdict_overrides.mrz_verdict)) ? scoreCard('MRZ validation', null, row.mrz_verdict, 'ICAO 9303 checksum validation', row, 'mrz_verdict') : ''}
       </div>
     </div>
 
