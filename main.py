@@ -55,6 +55,22 @@ async def health():
     return {"status": "ok"}
 
 
+# Kill-switch service worker — served at every path a service worker could
+# plausibly have been registered under on this origin (root scope and the
+# /admin/ scope the app actually lives at). It exists purely to unregister
+# and clear the cache of any stale worker left over from a past PWA/install
+# experiment, which would otherwise keep intercepting fetches and serving an
+# old build straight from its own cache — invisible to Cache-Control headers
+# entirely, since a controlling service worker never asks the server.
+_SW = _HERE / "sw.js"
+if _SW.exists():
+    for _sw_path in ("/sw.js", "/service-worker.js", "/admin/sw.js", "/admin/service-worker.js"):
+        def _make_sw(p: Path):
+            async def _route():
+                return FileResponse(str(p), media_type="application/javascript", headers=_NO_STORE)
+            return _route
+        app.get(_sw_path, include_in_schema=False)(_make_sw(_SW))
+
 # Country-code autocomplete data, shared by list/screen/document-check pages.
 # Served directly (not via StaticFiles) so it gets the same no-store header —
 # a generic StaticFiles mount lets browsers cache it indefinitely.
