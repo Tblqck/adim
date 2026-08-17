@@ -133,9 +133,26 @@ async function loadPage(page = 1) {
 }
 
 async function handleDeleteRestore(action, id) {
-  if (action === 'delete' && !confirm('Delete this verification? It stays recoverable for 4 days, then is permanently removed.')) return;
-  const path   = `/verifications/${id}${action === 'restore' ? '/restore' : ''}`;
+  const isSuperAdmin = sessionStorage.getItem('kyc_super_admin') === '1';
+  let path = `/verifications/${id}${action === 'restore' ? '/restore' : ''}`;
   const method = action === 'restore' ? 'POST' : 'DELETE';
+
+  if (action === 'delete') {
+    // Two different prompts, matching two different backend behaviors
+    // (see production/api/routers/admin.py's delete_verification): a
+    // super-admin delete is IMMEDIATE and PERMANENT with no recovery
+    // window at all, so the confirmation has to say that plainly, not
+    // reuse the firm-scoped "still recoverable" wording. confirm=true is
+    // only appended for the super-admin path -- the backend requires it
+    // explicitly and 400s without it, so there's no accidental permanent
+    // delete from a stray request either.
+    const message = isSuperAdmin
+      ? 'Permanently delete this verification right now? This cannot be undone — there is no recovery window.'
+      : 'Delete this verification? It stays recoverable for 24 hours, then is permanently removed.';
+    if (!confirm(message)) return;
+    if (isSuperAdmin) path += '?confirm=true';
+  }
+
   await adminFetch(path, { method }).catch(() => {});
   await loadPage(state.page);
 }
