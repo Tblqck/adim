@@ -65,17 +65,25 @@ async function loadFirms() {
   }
 }
 
-function renderNewFirm(name, password, apiKey) {
+function renderNewFirm(name, slug, password, apiKey) {
   newFirmWrap.innerHTML = `
     <div class="admin-panel">
       <h3>Firm created</h3>
-      <div class="field-card" style="margin-top:0">
-        <div class="label">Name</div>
-        <div class="value">${escapeHtml(name)}</div>
+      <div class="admin-note" style="margin:0 0 14px">
+        <b>${escapeHtml(name)}</b> signs in at <b>${escapeHtml(location.origin)}/admin/login</b> with:
       </div>
-      <div class="field-card">
-        <div class="label">Password</div>
-        <div class="value" style="word-break:break-all;font-weight:400;font-size:0.9rem">${escapeHtml(password)}</div>
+      <div class="field-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:0">
+        <div class="field-card">
+          <div class="label">Firm</div>
+          <div class="value" style="font-family:var(--a-mono);font-weight:400">${escapeHtml(slug)}</div>
+        </div>
+        <div class="field-card">
+          <div class="label">Password</div>
+          <div class="value" style="word-break:break-all;font-weight:400;font-size:0.9rem">${escapeHtml(password)}</div>
+        </div>
+      </div>
+      <div class="admin-note" style="margin-top:12px">
+        No username &mdash; that field is only for named team members the firm adds later.
       </div>
       ${apiKey ? `
         <div class="field-card" style="border-color:rgba(255,85,117,0.3)">
@@ -87,7 +95,7 @@ function renderNewFirm(name, password, apiKey) {
         </div>
       ` : ''}
       <div class="admin-note" style="margin-top:12px;margin-bottom:0">
-        Share the password with the firm's head admin — it won't be shown again either.
+        Share these with the firm's head admin — the password won't be shown again.
       </div>
     </div>
   `;
@@ -140,7 +148,7 @@ async function createFirm() {
       return;
     }
     const data = await resp.json();
-    renderNewFirm(name, password, data.api_key);
+    renderNewFirm(name, slug, password, data.api_key);
     document.getElementById('f-name').value = '';
     slugInput.value = '';
     passwordInput.value = '';

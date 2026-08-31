@@ -15,17 +15,34 @@
       <img src="idntory-logo.png" alt="idntory" class="admin-logo login-logo">
       <h1>KYC Admin</h1>
       <p>Sign in to review verifications.</p>
-      <input type="text" id="firm" name="firm" placeholder="Firm name" autocomplete="organization" autofocus>
-      <input type="text" id="username" name="username" placeholder="Username" autocomplete="username">
+      <input type="text" id="firm" name="firm" placeholder="Firm" autocomplete="organization" autofocus>
       <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required>
+      <button type="button" id="team-toggle" class="login-linkbtn">I'm a named team member</button>
+      <input type="text" id="username" name="username" placeholder="Username" autocomplete="username" style="display:none">
       <div class="error" id="error"></div>
       <button type="submit" class="admin-btn primary" style="width:100%">Sign in</button>
+      <p class="login-hint">Your firm signs in with its <b>Firm ID</b> and password &mdash; the same
+        details from when the firm was set up. A username is only for named team members.</p>
     </form>
   </div>
+
+  <style>
+    .login-linkbtn{background:none;border:0;color:#4a9eff;font:inherit;font-size:.85rem;
+      padding:0;cursor:pointer;align-self:flex-start;margin:-4px 0 2px}
+    .login-linkbtn:hover{text-decoration:underline}
+    .login-hint{font-size:.8rem;opacity:.7;margin:14px 0 0;line-height:1.5}
+  </style>
 
   <script>
     const form  = document.getElementById('login-form');
     const error = document.getElementById('error');
+
+    document.getElementById('team-toggle').addEventListener('click', (e) => {
+      const u = document.getElementById('username');
+      u.style.display = 'block';
+      u.focus();
+      e.target.style.display = 'none';
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();

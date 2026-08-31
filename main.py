@@ -100,7 +100,7 @@ for _asset in ("admin.css", "admin.js", "list.js", "detail.js", "screen.js", "do
             return _route
         app.get(f"/admin/{_asset}", include_in_schema=False)(_make_admin_asset(_f))
 
-for _page in ("login", "list", "detail", "screen", "document-check", "generate-link", "kyb", "databases", "api", "users", "user-detail", "firms", "firm-detail"):
+for _page in ("login", "list", "detail", "screen", "document-check", "generate-link", "kyb", "databases", "api", "guide", "users", "user-detail", "firms", "firm-detail"):
     _html = _HERE / f"{_page}.html"
     if _html.exists():
         def _make_admin_page(p: Path):
