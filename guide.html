@@ -1,247 +1,182 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Admin &middot; Guide</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
-<style>
-  :root{
-    --bg:#f5f6f9; --surface:#ffffff; --surface-2:#eef1f5; --sunken:#f8f9fb;
-    --ink:#171b23; --muted:#57616f; --faint:#8a94a2; --line:#e2e5eb;
-    --accent:#2f66cf; --accent-ink:#204fac; --accent-wash:#eaf0fb;
-    --pass:#1c8a56; --pass-wash:#e5f3ec;
-    --fail:#c23a2e; --fail-wash:#fbe9e7;
-    --warn:#a9741a; --warn-wash:#f7efe0;
-    --shadow:0 1px 2px rgba(20,28,45,.05), 0 8px 24px -12px rgba(20,28,45,.14);
-    --radius:14px;
-    --measure:44rem;
-    color-scheme:light dark;
-  }
-  @media (prefers-color-scheme:dark){
-    :root:not([data-theme="light"]){
-      --bg:#0d1015; --surface:#151a21; --surface-2:#1b212b; --sunken:#11151b;
-      --ink:#e7eaf0; --muted:#9aa4b2; --faint:#697384; --line:#262d38;
-      --accent:#5c94f0; --accent-ink:#93b8f7; --accent-wash:#182234;
-      --pass:#4bbd85; --pass-wash:#13251d;
-      --fail:#e2685c; --fail-wash:#2a1714;
-      --warn:#cfa356; --warn-wash:#2a2213;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
-    }
-  }
-  :root[data-theme="dark"]{
-    --bg:#0d1015; --surface:#151a21; --surface-2:#1b212b; --sunken:#11151b;
-    --ink:#e7eaf0; --muted:#9aa4b2; --faint:#697384; --line:#262d38;
-    --accent:#5c94f0; --accent-ink:#93b8f7; --accent-wash:#182234;
-    --pass:#4bbd85; --pass-wash:#13251d;
-    --fail:#e2685c; --fail-wash:#2a1714;
-    --warn:#cfa356; --warn-wash:#2a2213;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
-  }
-
-  *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased;
-  }
-  a{color:var(--accent-ink); text-underline-offset:2px; text-decoration-thickness:1px}
-
-  /* ---------- shell ---------- */
+  <meta charset="utf-8">
+  <script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));if(window.caches)caches.keys().then(ks=>ks.forEach(k=>caches.delete(k)));}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1015">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Admin &middot; Guide</title>
+  <style>
+.guide-doc{--measure:44rem}
+.guide-doc a{color:var(--accent-ink); text-underline-offset:2px; text-decoration-thickness:1px}
+.guide-doc /* ---------- shell ---------- */
   .wrap{max-width:1140px; margin:0 auto; padding:0 28px}
-  header.top{
-    border-bottom:1px solid var(--line); background:var(--surface);
-    position:relative; overflow:hidden;
-  }
-  header.top .wrap{padding-top:60px; padding-bottom:52px; position:relative; z-index:1}
-  .kicker{
-    font-family:"IBM Plex Mono",monospace; font-size:.72rem; letter-spacing:.16em;
-    text-transform:uppercase; color:var(--accent-ink); margin:0 0 18px;
-  }
-  header.top h1{
-    font-size:clamp(2.1rem,4.4vw,3rem); line-height:1.08; font-weight:700;
-    letter-spacing:-.02em; margin:0 0 16px; text-wrap:balance; max-width:20ch;
-  }
-  header.top p.lede{font-size:1.12rem; color:var(--muted); margin:0; max-width:52ch}
-  .grid-bg{
-    position:absolute; inset:0; z-index:0; opacity:.5;
-    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-    background-size:44px 44px;
-    -webkit-mask-image:linear-gradient(120deg,#000,transparent 62%);
-            mask-image:linear-gradient(120deg,#000,transparent 62%);
-  }
-
-  .layout{display:grid; grid-template-columns:232px minmax(0,1fr); gap:56px; padding:56px 0 96px}
-  @media (max-width:920px){ .layout{grid-template-columns:1fr; gap:0; padding-top:32px} }
-
-  /* ---------- toc ---------- */
+.guide-doc .layout{display:grid; grid-template-columns:232px minmax(0,1fr); gap:56px; padding:56px 0 96px}
+@media (max-width:920px){
+.guide-doc .layout{grid-template-columns:1fr; gap:0; padding-top:32px}
+}
+.guide-doc /* ---------- toc ---------- */
   nav.toc{position:sticky; top:24px; align-self:start; font-size:.9rem}
-  @media (max-width:920px){
-    nav.toc{position:static; margin-bottom:40px; padding-bottom:28px; border-bottom:1px solid var(--line)}
-  }
-  nav.toc .lbl{
+@media (max-width:920px){
+.guide-doc nav.toc{position:static; margin-bottom:40px; padding-bottom:28px; border-bottom:1px solid var(--line)}
+}
+.guide-doc nav.toc .lbl{
     font-family:"IBM Plex Mono",monospace; font-size:.68rem; letter-spacing:.15em;
     text-transform:uppercase; color:var(--faint); margin:0 0 14px; padding-left:14px;
   }
-  nav.toc ol{list-style:none; margin:0; padding:0; counter-reset:s}
-  nav.toc li{counter-increment:s}
-  nav.toc a{
+.guide-doc nav.toc ol{list-style:none; margin:0; padding:0; counter-reset:s}
+.guide-doc nav.toc li{counter-increment:s}
+.guide-doc nav.toc a{
     display:flex; gap:10px; padding:7px 0 7px 14px; color:var(--muted);
     text-decoration:none; border-left:2px solid var(--line); line-height:1.4;
   }
-  nav.toc a::before{content:counter(s,decimal-leading-zero); color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:.78rem}
-  nav.toc a:hover{color:var(--ink); border-left-color:var(--accent)}
-  nav.toc a.active{color:var(--ink); border-left-color:var(--accent); font-weight:500}
-  nav.toc a.active::before{color:var(--accent-ink)}
-
-  /* ---------- content ---------- */
+.guide-doc nav.toc a::before{content:counter(s,decimal-leading-zero); color:var(--faint); font-family:"IBM Plex Mono",monospace; font-size:.78rem}
+.guide-doc nav.toc a:hover{color:var(--ink); border-left-color:var(--accent)}
+.guide-doc nav.toc a.active{color:var(--ink); border-left-color:var(--accent); font-weight:500}
+.guide-doc nav.toc a.active::before{color:var(--accent-ink)}
+.guide-doc /* ---------- content ---------- */
   main{min-width:0}
-  section{scroll-margin-top:24px; padding-top:8px}
-  section + section{margin-top:64px; padding-top:56px; border-top:1px solid var(--line)}
-  .eyebrow{
+.guide-doc section{scroll-margin-top:24px; padding-top:8px}
+.guide-doc section + section{margin-top:64px; padding-top:56px; border-top:1px solid var(--line)}
+.guide-doc .eyebrow{
     font-family:"IBM Plex Mono",monospace; font-size:.72rem; letter-spacing:.15em;
     text-transform:uppercase; color:var(--accent-ink); margin:0 0 10px;
   }
-  h2{font-size:1.72rem; font-weight:700; letter-spacing:-.015em; margin:0 0 14px; text-wrap:balance}
-  h3{font-size:1.12rem; font-weight:600; margin:34px 0 10px; letter-spacing:-.005em}
-  p{margin:0 0 16px; max-width:var(--measure)}
-  main ul,main ol{max-width:var(--measure); padding-left:0}
-  strong{font-weight:600}
-
-  code,kbd{font-family:"IBM Plex Mono",monospace; font-size:.86em}
-  code{background:var(--surface-2); padding:.12em .38em; border-radius:5px}
-  kbd{
+.guide-doc h2{font-size:1.72rem; font-weight:700; letter-spacing:-.015em; margin:0 0 14px; text-wrap:balance}
+.guide-doc h3{font-size:1.12rem; font-weight:600; margin:34px 0 10px; letter-spacing:-.005em}
+.guide-doc p{margin:0 0 16px; max-width:var(--measure)}
+.guide-doc main ul, .guide-doc main ol{max-width:var(--measure); padding-left:0}
+.guide-doc strong{font-weight:600}
+.guide-doc code, .guide-doc kbd{font-family:"IBM Plex Mono",monospace; font-size:.86em}
+.guide-doc code{background:var(--surface-2); padding:.12em .38em; border-radius:5px}
+.guide-doc kbd{
     background:var(--surface); border:1px solid var(--line); border-bottom-width:2px;
     border-radius:5px; padding:.08em .4em; font-size:.8em;
   }
-
-  /* role pill */
+.guide-doc /* role pill */
   .role{
     display:inline-flex; align-items:center; gap:6px; font-family:"IBM Plex Mono",monospace;
     font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; font-weight:500;
     padding:3px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted);
     vertical-align:middle;
   }
-  .role.super{color:var(--accent-ink); border-color:color-mix(in srgb,var(--accent) 40%,var(--line)); background:var(--accent-wash)}
-  h2 .role{margin-left:10px; transform:translateY(-2px)}
-
-  /* screenshot figure */
+.guide-doc .role.super{color:var(--accent-ink); border-color:color-mix(in srgb,var(--accent) 40%,var(--line)); background:var(--accent-wash)}
+.guide-doc h2 .role{margin-left:10px; transform:translateY(-2px)}
+.guide-doc /* screenshot figure */
   figure.shot{margin:26px 0 8px}
-  figure.shot .frame{
+.guide-doc figure.shot .frame{
     border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
     background:var(--sunken); box-shadow:var(--shadow);
   }
-  figure.shot .bar{
+.guide-doc figure.shot .bar{
     display:flex; gap:7px; align-items:center; padding:11px 14px; border-bottom:1px solid var(--line);
     background:var(--surface);
   }
-  figure.shot .bar i{width:10px; height:10px; border-radius:50%; background:var(--line); display:block}
-  figure.shot .bar span{
+.guide-doc figure.shot .bar i{width:10px; height:10px; border-radius:50%; background:var(--line); display:block}
+.guide-doc figure.shot .bar span{
     margin-left:8px; font-family:"IBM Plex Mono",monospace; font-size:.74rem; color:var(--faint);
   }
-  figure.shot img{display:block; width:100%; height:auto}
-  figure.shot figcaption{
+.guide-doc figure.shot img{display:block; width:100%; height:auto}
+.guide-doc figure.shot figcaption{
     font-size:.86rem; color:var(--muted); margin-top:12px; padding-left:2px; max-width:var(--measure);
   }
-  figure.shot figcaption b{color:var(--ink); font-weight:600}
-
-  /* steps */
+.guide-doc figure.shot figcaption b{color:var(--ink); font-weight:600}
+.guide-doc /* steps */
   ol.steps{list-style:none; margin:20px 0; counter-reset:step; display:flex; flex-direction:column; gap:14px}
-  ol.steps li{
+.guide-doc ol.steps li{
     counter-increment:step; position:relative; padding-left:44px; min-height:28px;
   }
-  ol.steps li::before{
+.guide-doc ol.steps li::before{
     content:counter(step); position:absolute; left:0; top:-1px;
     width:28px; height:28px; border-radius:8px; display:grid; place-items:center;
     background:var(--accent-wash); color:var(--accent-ink); font-family:"IBM Plex Mono",monospace;
     font-size:.82rem; font-weight:500; border:1px solid color-mix(in srgb,var(--accent) 24%,transparent);
   }
-
-  /* definition list */
+.guide-doc /* definition list */
   dl.fields{margin:18px 0; display:grid; grid-template-columns:max-content 1fr; gap:2px 22px; max-width:var(--measure)}
-  dl.fields dt{
+.guide-doc dl.fields dt{
     font-family:"IBM Plex Mono",monospace; font-size:.82rem; color:var(--accent-ink);
     padding:9px 0; border-top:1px solid var(--line); font-weight:500;
   }
-  dl.fields dd{margin:0; padding:9px 0; border-top:1px solid var(--line); color:var(--muted); font-size:.95rem}
-  @media (max-width:560px){
-    dl.fields{grid-template-columns:1fr; gap:0}
-    dl.fields dd{border-top:0; padding-top:0; padding-bottom:12px}
-  }
-
-  /* callout */
+.guide-doc dl.fields dd{margin:0; padding:9px 0; border-top:1px solid var(--line); color:var(--muted); font-size:.95rem}
+@media (max-width:560px){
+.guide-doc dl.fields{grid-template-columns:1fr; gap:0}
+.guide-doc dl.fields dd{border-top:0; padding-top:0; padding-bottom:12px}
+}
+.guide-doc /* callout */
   .note{
     border:1px solid var(--line); border-left:3px solid var(--accent);
     background:var(--surface); border-radius:0 10px 10px 0; padding:16px 18px; margin:22px 0;
     max-width:var(--measure); font-size:.95rem;
   }
-  .note p{margin:0; max-width:none}
-  .note p + p{margin-top:9px}
-  .note.warn{border-left-color:var(--warn); background:var(--warn-wash)}
-  .note.danger{border-left-color:var(--fail); background:var(--fail-wash)}
-  .note .tag{
+.guide-doc .note p{margin:0; max-width:none}
+.guide-doc .note p + p{margin-top:9px}
+.guide-doc .note.warn{border-left-color:var(--warn); background:var(--warn-wash)}
+.guide-doc .note.danger{border-left-color:var(--fail); background:var(--fail-wash)}
+.guide-doc .note .tag{
     display:block; font-family:"IBM Plex Mono",monospace; font-size:.68rem; letter-spacing:.12em;
     text-transform:uppercase; color:var(--muted); margin-bottom:6px;
   }
-  .note.warn .tag{color:var(--warn)}
-  .note.danger .tag{color:var(--fail)}
-
-  /* verdict table */
+.guide-doc .note.warn .tag{color:var(--warn)}
+.guide-doc .note.danger .tag{color:var(--fail)}
+.guide-doc /* verdict table */
   .tablewrap{overflow-x:auto; margin:20px 0; border:1px solid var(--line); border-radius:10px}
-  table{border-collapse:collapse; width:100%; font-size:.9rem; min-width:520px}
-  th,td{text-align:left; padding:11px 16px; border-top:1px solid var(--line); vertical-align:top}
-  thead th{
+.guide-doc table{border-collapse:collapse; width:100%; font-size:.9rem; min-width:520px}
+.guide-doc th, .guide-doc td{text-align:left; padding:11px 16px; border-top:1px solid var(--line); vertical-align:top}
+.guide-doc thead th{
     border-top:0; background:var(--surface-2); font-family:"IBM Plex Mono",monospace;
     font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500;
   }
-  td code{white-space:nowrap}
-  .badge{
+.guide-doc td code{white-space:nowrap}
+.guide-doc .badge{
     display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:.72rem; font-weight:500;
     padding:2px 8px; border-radius:999px; letter-spacing:.02em;
   }
-  .badge.pass{background:var(--pass-wash); color:var(--pass)}
-  .badge.fail{background:var(--fail-wash); color:var(--fail)}
-  .badge.warn{background:var(--warn-wash); color:var(--warn)}
-
-  footer{border-top:1px solid var(--line); background:var(--surface)}
-  footer .wrap{padding:28px 28px 40px; font-size:.85rem; color:var(--faint)}
-  footer code{font-size:.82em}
-
-  ::selection{background:var(--accent); color:#fff}
-  a:focus-visible,summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
-
-  .returnbar{
-    position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between;
-    gap:16px; padding:10px 28px; background:var(--surface); border-bottom:1px solid var(--line);
-    font-size:.85rem;
-  }
-  .returnbar .mark{font-family:"IBM Plex Mono",monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); font-size:.72rem}
-  .returnbar a{
-    display:inline-flex; align-items:center; gap:7px; color:var(--ink); text-decoration:none; font-weight:500;
-    padding:5px 11px; border:1px solid var(--line); border-radius:8px;
-  }
-  .returnbar a:hover{border-color:var(--accent); color:var(--accent-ink)}
-</style>
+.guide-doc .badge.pass{background:var(--pass-wash); color:var(--pass)}
+.guide-doc .badge.fail{background:var(--fail-wash); color:var(--fail)}
+.guide-doc .badge.warn{background:var(--warn-wash); color:var(--warn)}
+.guide-doc footer{border-top:1px solid var(--line); background:var(--surface)}
+.guide-doc footer .wrap{padding:28px 28px 40px; font-size:.85rem; color:var(--faint)}
+.guide-doc footer code{font-size:.82em}
+.guide-doc ::selection{background:var(--accent); color:#fff}
+.guide-doc a:focus-visible, .guide-doc summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+  .guide-doc .wrap{padding:0;max-width:none;margin:0}
+  .guide-doc .layout{padding:8px 0 40px}
+  .guide-doc main > section:first-child{padding-top:0;border-top:0;margin-top:0}
+  .guide-doc nav.toc{top:26px}
+  </style>
 </head>
-<body>
-<div class="returnbar">
-  <span class="mark">idntory admin &middot; guide</span>
-  <a href="list">&larr;&nbsp; Back to dashboard</a>
-</div>
-
-<header class="top">
-  <div class="grid-bg" aria-hidden="true"></div>
-  <div class="wrap">
-    <p class="kicker">idntory &middot; KYC verification platform</p>
-    <h1>Admin Guide</h1>
-    <p class="lede">How to review identity verifications, generate applicant links, and run
-      compliance checks in the idntory admin console.</p>
-  </div>
-</header>
-
-<div class="wrap">
+<body class="admin">
+  <div class="admin-shell">
+    <div class="admin-topbar">
+      <a class="admin-brand" href="list">
+        <img src="idntory-logo.png" alt="idntory" class="admin-logo">
+        <div>
+          <h1>Guide</h1>
+          <div class="sub">How to review verifications, run compliance checks &amp; generate applicant links</div>
+        </div>
+      </a>
+      <div class="review-actions">
+        <span class="sub" id="user-badge"></span>
+        <button class="admin-btn" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+    <nav class="admin-nav">
+      <a href="list">Verifications</a>
+      <a href="document-check">Document Authenticity Check</a>
+      <a href="screen">PEP &amp; Sanctions Check</a>
+      <a href="generate-link">Generate Link</a>
+      <a href="kyb">KYB</a>
+      <a href="databases">Databases</a>
+      <a href="api">API</a>
+      <a href="guide" class="active">Guide</a>
+      <a href="users" id="users-nav-link" style="display:none">Manage Users</a>
+      <a href="firms" id="firms-nav-link" style="display:none">Firms</a>
+    </nav>
+    <div class="guide-doc">
+      <div class="wrap">
   <div class="layout">
     <nav class="toc" aria-label="Contents">
       <p class="lbl">Contents</p>
@@ -495,13 +430,9 @@
     </main>
   </div>
 </div>
-
-<footer>
-  <div class="wrap">
-    idntory admin console &middot; guide reflects <code>admin.idntory.com</code> as deployed 2026-08-31. Screens shown use demo data &mdash; no real applicants.
+    </div>
   </div>
-</footer>
-<script>
+  <script>
   (function(){
     var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
     var map = {};
@@ -518,5 +449,9 @@
   })();
 </script>
 
+  <script>
+    var lb=document.getElementById('logout-btn');
+    if(lb) lb.addEventListener('click', async function(){ try{await fetch('/api/v1/admin/logout',{method:'POST'});}catch(e){} location.href='login'; });
+  </script>
 </body>
 </html>
