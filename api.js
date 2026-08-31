@@ -17,10 +17,10 @@ function firmQuery() {
 
 function fillCurlSlug(slug) {
   const s = slug || 'your-firm-slug';
-  document.getElementById('curl-verify').textContent =
-    document.getElementById('curl-verify').textContent.replace(/X-Client-Id: [^\\\n]+/, `X-Client-Id: ${s} \\`);
-  document.getElementById('curl-sessions').textContent =
-    document.getElementById('curl-sessions').textContent.replace(/X-Client-Id: [^\\\n]+/, `X-Client-Id: ${s} \\`);
+  const v = document.getElementById('curl-verify');
+  if (v) v.textContent = v.textContent.replace(/X-Client-Id: [^\\\n]+/, `X-Client-Id: ${s} \\`);
+  const c = document.getElementById('curl-sessions');
+  if (c) c.textContent = c.textContent.replace(/firm=[^"]+/, `firm=${s}`);
 }
 
 function updateAvailability() {

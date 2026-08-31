@@ -73,9 +73,14 @@
         </tbody>
       </table>
 
+      <p class="admin-note">
+        The API server uses a self-signed certificate, so pass <code>-k</code> (curl) /
+        disable cert verification in your HTTP client. Base URL: <code>https://18.185.59.156</code>.
+      </p>
+
       <h4>Submit a verification directly</h4>
-      <p><code>POST /api/v1/verify</code></p>
-      <div class="code-block" id="curl-verify">curl -X POST https://18.185.59.156/api/v1/verify \
+      <p><code>POST /api/v1/verify</code> — authenticate with <code>X-Client-Id</code> + <code>X-Api-Key</code>.</p>
+      <div class="code-block" id="curl-verify">curl -k -X POST https://18.185.59.156/api/v1/verify \
   -H "X-Client-Id: your-firm-slug" \
   -H "X-Api-Key: YOUR_API_KEY" \
   -F "country=NG" \
@@ -85,24 +90,32 @@
   -F "id_image=@id_front.jpg" \
   -F "liveness_frames=@frame1.jpg" \
   -F "liveness_frames=@frame2.jpg"</div>
-      <p>Every submission is automatically tagged to your firm — results show up filtered to only your data in the dashboard.</p>
+      <p>
+        <code>mode</code>: <code>1</code> = ID + selfie (<code>-F selfie=@...</code>),
+        <code>2</code> = ID + holding photo (<code>-F holding_photo=@...</code>),
+        <code>3</code> = ID + 1–5 liveness frames. Optional <code>-F id_image_back=@...</code>.
+        Every submission is auto-tagged to your firm and shows up filtered to your data in the dashboard.
+      </p>
 
       <h4>Generate a hosted capture link programmatically</h4>
       <p>
-        If part of your flow still wants to hand off to the hosted capture page instead of
-        building your own camera/liveness UI, generate a one-time link with the same
-        credentials — no dashboard login needed:
+        To hand off to the hosted capture page instead of building your own camera/liveness UI:
+        link generation needs a dashboard session, so sign in first with your firm slug and
+        password to get a cookie, then create the link with that cookie. The
+        <code>X-Api-Key</code> is <b>not</b> accepted on this endpoint.
       </p>
-      <p><code>POST /api/v1/admin/sessions</code></p>
-      <div class="code-block" id="curl-sessions">curl -X POST https://18.185.59.156/api/v1/admin/sessions \
-  -H "X-Client-Id: your-firm-slug" \
-  -H "X-Api-Key: YOUR_API_KEY" \
+      <p><code>POST /api/v1/admin/login</code> → <code>POST /api/v1/admin/sessions</code></p>
+      <div class="code-block" id="curl-sessions">curl -k -c cookies.txt -X POST https://18.185.59.156/api/v1/admin/login \
+  --data-urlencode "firm=your-firm-slug" \
+  --data-urlencode "password=YOUR_DASHBOARD_PASSWORD"
+
+curl -k -b cookies.txt -X POST https://18.185.59.156/api/v1/admin/sessions \
   -H "Content-Type: application/json" \
   -d '{"user_ref": "your_internal_applicant_id"}'</div>
       <p>
         Redirect your user to the returned <code>url</code>. It's single-use and expires in 24
-        hours. Your API key never has to touch the customer's browser this way — only the
-        disposable session token does.
+        hours &mdash; only that disposable token touches the customer's browser, never your key
+        or password. (Or just use the <a href="generate-link">Generate Link</a> page.)
       </p>
     </div>
   </div>
