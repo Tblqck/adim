@@ -63,17 +63,24 @@ function isCorrected(row, key) {
 function mrzFields(row) {
   const bySide = row.pipeline_response && row.pipeline_response.mrz_by_side;
   if (!bySide) return null;
-  const parsedSide = ['front', 'back'].map(s => bySide[s]).find(m => m && m.parsed);
-  if (!parsedSide) return null;
+  // When Claude's independent MRZ re-read ran and succeeded it is the
+  // authoritative transcription -- the local Florence parse it supersedes
+  // has been seen to misread a digit and to mangle the (un-checksummed)
+  // name field (jam surname + given names together, drop the split). Prefer
+  // it over whichever raw side parsed.
+  const cr = bySide.claude_reread;
+  const src = (cr && cr.ok) ? cr
+            : ['front', 'back'].map(s => bySide[s]).find(m => m && m.parsed);
+  if (!src) return null;
   return {
-    passport_number: parsedSide.document_number || null,
-    date_of_birth:   parsedSide.date_of_birth_normalized || parsedSide.date_of_birth || null,
-    surname:         parsedSide.surname || null,
-    given_names:     parsedSide.given_names || null,
-    expiry_date:     parsedSide.expiry_date_normalized || parsedSide.expiry_date || null,
-    nationality:     parsedSide.nationality || null,
-    format:          parsedSide.format || null,
-    checksum_valid:  parsedSide.checksum_valid || {},
+    passport_number: src.document_number || null,
+    date_of_birth:   src.date_of_birth_normalized || src.date_of_birth || null,
+    surname:         src.surname || null,
+    given_names:     src.given_names || null,
+    expiry_date:     src.expiry_date_normalized || src.expiry_date || null,
+    nationality:     src.nationality || null,
+    format:          src.format || null,
+    checksum_valid:  src.checksum_valid || {},
   };
 }
 
@@ -537,8 +544,8 @@ function renderCross(row) {
   const rows = [
     ['Document number', ['id_number', 'doc_number'], 'passport_number', 'text'],
     ['Date of birth',   ['dob', 'date_of_birth'],     'date_of_birth',   'date'],
-    ['Surname',         ['surname'],                  'surname',         'text'],
-    ['Given names',     ['given_names'],               'given_names',    'text'],
+    ['Surname',         ['surname'],                  'surname',         'name'],
+    ['Given names',     ['given_names'],               'given_names',    'name'],
     ['Date of expiry',  ['expiry', 'expiry_date'],     'expiry_date',    'date'],
     ['Nationality',     ['nationality'],               'nationality',    'nationality'],
   ];
@@ -570,6 +577,20 @@ function renderCross(row) {
     const na = normText(ocrVal);
     return aliases.some(alias => na.includes(alias) || alias.includes(na));
   };
+  // Surname / given-names: the MRZ carries the whole name in two positional
+  // slots and some parsers put everything in one; the printed side is read
+  // label by label. So a per-field compare can read "mismatch" purely
+  // because the split lands differently on each side. Fall back to comparing
+  // the full name as one string (surname + given names, both sources) —
+  // order-independent token overlap — before calling it a mismatch.
+  const fullName = (o) => normText([o.surname, o.given_names].filter(Boolean).join(' '));
+  const nameMatches = (ocrVal, mrzVal) => {
+    if (textMatches(ocrVal, mrzVal)) return true;
+    const a = fullName(ocr), b = fullName(mrz || {});
+    if (!a || !b) return false;
+    const bt = b.split(' ');
+    return a.split(' ').every(tok => bt.includes(tok)) || bt.every(tok => a.split(' ').includes(tok));
+  };
 
   const body = rows.map(([label, ocrKeys, mrzKey, kind]) => {
     const ocrVal = ocrKeys.map(k => ocr[k]).find(Boolean) || null;
@@ -583,15 +604,20 @@ function renderCross(row) {
         <td colspan="2">No MRZ available — OCR value only</td>
       </tr>`;
     }
-    const match = ocrVal && mrzVal && (
-      kind === 'date' ? dateMatches(ocrVal, mrzVal) :
-      kind === 'nationality' ? nationalityMatches(ocrVal, mrzVal) :
-      textMatches(ocrVal, mrzVal)
-    );
+    const match = kind === 'name'
+      ? !!(ocrVal && nameMatches(ocrVal, mrzVal))
+      : !!(ocrVal && mrzVal && (
+          kind === 'date' ? dateMatches(ocrVal, mrzVal) :
+          kind === 'nationality' ? nationalityMatches(ocrVal, mrzVal) :
+          textMatches(ocrVal, mrzVal)
+        ));
+    // For a name row, show the whole MRZ name if the per-slot value is
+    // empty (some parsers leave given_names blank and put it all in surname).
+    const mrzShown = (kind === 'name' && !mrzVal) ? (fullName(mrz || {}) || null) : mrzVal;
     return `<tr>
       <td>${escapeHtml(label)}</td>
       <td class="mono">${escapeHtml(ocrVal || '—')}</td>
-      <td class="mono">${escapeHtml(mrzVal || '—')}</td>
+      <td class="mono">${escapeHtml(mrzShown || '—')}</td>
       <td>${match ? '<span class="badge green">✓ Match Confirmed</span>' : '<span class="badge amber">Mismatch / incomplete</span>'}</td>
       <td>${match ? `Found visual match for ${label.toLowerCase()}: ${escapeHtml(ocrVal)}` : 'Values differ or one side is missing'}</td>
     </tr>`;
