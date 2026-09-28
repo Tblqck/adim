@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    /* Dark by default; the `dark` class on <html> keeps the door open for a
+       future light theme without rewriting components. */
+    background-color: theme('colors.canvas');
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-canvas text-neutral-100 antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Quiet, thin scrollbars so chrome does not compete with content. */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-neutral-800;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neutral-700;
+  }
+
+  * {
+    scrollbar-color: theme('colors.neutral.800') transparent;
+    scrollbar-width: thin;
+  }
+
+  ::selection {
+    @apply bg-brand-500/30 text-white;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Horizontal strips (tab bars) that scroll without showing a bar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The name-similarity slider on the sanctions screen.
+     A native range input, so it keeps its keyboard behaviour, its screen-reader
+     semantics and its touch handling for nothing; only the furniture is ours.
+     The 20px thumb is comfortable with a finger and still precise with a
+     mouse. */
+  .range-slider {
+    @apply h-2 w-full cursor-pointer rounded-full bg-neutral-800;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .range-slider:focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-neutral-900;
+  }
+  .range-slider:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+  .range-slider::-webkit-slider-thumb {
+    @apply h-5 w-5 rounded-full border-2 border-neutral-900 bg-brand-500 transition-transform;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .range-slider:active::-webkit-slider-thumb {
+    transform: scale(1.1);
+  }
+  .range-slider::-moz-range-thumb {
+    @apply h-5 w-5 rounded-full border-2 border-neutral-900 bg-brand-500;
+  }
+
+  /* Skip link, revealed on keyboard focus. */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50
+      focus:rounded-lg focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-sm
+      focus:font-medium focus:text-white;
+  }
+}

@@ -2,6 +2,10 @@ services:
   - type: web
     name: adim-admin
     runtime: docker
+    healthCheckPath: /health
     envVars:
+      # The EC2 API's admin routes, e.g. https://18.185.59.156/api/v1/admin
+      # (the certificate in certs/ is pinned). Same variable, same value as the
+      # old FastAPI dashboard.
       - key: API_SERVER_URL
         sync: false

@@ -1,10 +1,17 @@
-.venv/
-__pycache__/
-*.pyc
-.claude/
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
 .env
 .env.local
+.claude/
+.next-sample/
+# Local-only, from the old dashboard's repo
 doc/
+__pycache__/
+*.pyc
+.venv/
 design-export.zip
 DESIGN_EXPORT_REINTEGRATION.md
 DESIGN_EXPORT_MANIFEST.md

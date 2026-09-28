@@ -1,0 +1,37 @@
+{
+  "name": "kyc-admin-collation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KYC admin dashboard: the white-label platform's design, wired to the live verification API server",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev -p 5050",
+    "build": "next build",
+    "start": "next start -p 5050",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "sample": "node scripts/sample.mjs"
+  },
+  "dependencies": {
+    "clsx": "2.1.1",
+    "next": "15.5.24",
+    "qrcode-generator": "^2.0.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.10",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "autoprefixer": "10.4.20",
+    "eslint": "8.57.1",
+    "eslint-config-next": "15.5.24",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.19",
+    "typescript": "5.7.2"
+  }
+}
