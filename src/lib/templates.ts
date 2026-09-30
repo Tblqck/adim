@@ -142,6 +142,7 @@ export const PROFILE_FIELDS: readonly [key: string, label: string, aliases: stri
   ['id_number', 'Document number', ['doc_number', 'document_number', 'passport_number']],
   ['expiry_date', 'Expiry date', ['expiry']],
   ['nationality', 'Nationality', []],
+  ['sex', 'Sex', ['gender']],
   ['issue_date', 'Issue date', []],
 ]
 

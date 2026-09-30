@@ -57,6 +57,7 @@ export interface MrzSide {
   expiry_date?: string
   expiry_date_normalized?: string
   nationality?: string
+  sex?: string
   checksum_valid?: Record<string, boolean>
 }
 

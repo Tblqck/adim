@@ -12,6 +12,7 @@ export const EDITABLE_FIELDS: readonly [key: string, label: string, aliases: str
   ['surname', 'Surname', ['last_name']],
   ['date_of_birth', 'Date of birth', ['dob', 'birth_date']],
   ['nationality', 'Nationality', []],
+  ['sex', 'Sex', ['gender']],
   ['id_number', 'Document number', ['doc_number', 'document_number', 'passport_number']],
   ['issue_date', 'Issue date', []],
   ['expiry_date', 'Expiry', ['expiry']],
@@ -48,6 +49,7 @@ export interface MrzReading {
   given_names: string | null
   expiry_date: string | null
   nationality: string | null
+  sex: string | null
   format: string | null
   checksum_valid: Record<string, boolean>
 }
@@ -73,6 +75,7 @@ export function mrzReading(row: VerificationDetail): MrzReading | null {
     given_names: src.given_names || null,
     expiry_date: src.expiry_date_normalized || src.expiry_date || null,
     nationality: src.nationality || null,
+    sex: src.sex || null,
     format: src.format || null,
     checksum_valid: src.checksum_valid || {},
   }
@@ -88,7 +91,7 @@ const NATIONALITY_ALIASES: Record<string, string[]> = {
   NGA: ['NIGERIAN', 'NIGERIA'],
   GBR: ['BRITISH', 'UNITED KINGDOM', 'UK'],
   USA: ['AMERICAN', 'UNITED STATES', 'US'],
-  DEU: ['GERMAN', 'GERMANY'],
+  DEU: ['GERMAN', 'GERMANY', 'DEUTSCH'],
   FRA: ['FRENCH', 'FRANCE'],
   ITA: ['ITALIAN', 'ITALY'],
   ESP: ['SPANISH', 'SPAIN'],
@@ -137,6 +140,26 @@ const NATIONALITY_ALIASES: Record<string, string[]> = {
   IRQ: ['IRAQI', 'IRAQ'],
   AUS: ['AUSTRALIAN', 'AUSTRALIA'],
   NZL: ['NEW ZEALAND', 'KIWI'],
+  HRV: ['CROATIAN', 'CROATIA', 'HRVATSKA'],
+}
+
+/**
+ * The MRZ says M / F / X ("<" when unspecified); the printed card may spell
+ * it out in its own language, often bilingual ("M/M", "F / F", "MASCHILE").
+ * Returns the MRZ letter, or null when the text is no recognisable sex.
+ */
+const SEX_WORDS: Record<string, 'M' | 'F' | 'X'> = {
+  M: 'M', MALE: 'M', MAN: 'M', H: 'M', HOMME: 'M', MASCULIN: 'M', MASCULINO: 'M', MASCHILE: 'M', MANNLICH: 'M', MUSKI: 'M',
+  F: 'F', FEMALE: 'F', WOMAN: 'F', W: 'F', FEMME: 'F', FEMININ: 'F', FEMENINO: 'F', FEMININO: 'F', FEMMINILE: 'F', WEIBLICH: 'F', Z: 'F', ZENSKI: 'F', K: 'F',
+  X: 'X', '<': 'X',
+}
+
+export function sexCode(value: string | null | undefined): 'M' | 'F' | 'X' | null {
+  if (!value) return null
+  const plain = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim()
+  if (plain === '<') return 'X'
+  const codes = new Set(plain.split(/[^A-Z]+/).map((tok) => SEX_WORDS[tok]).filter(Boolean))
+  return codes.size === 1 ? [...codes][0] ?? null : null
 }
 
 export interface CrossCheckRow {
@@ -213,13 +236,20 @@ export function crossCheck(row: VerificationDetail): CrossCheckRow[] {
     return at.every((tok) => bt.includes(tok)) || bt.every((tok) => at.includes(tok))
   }
 
-  const spec: [label: string, ocrKeys: string[], mrzKey: keyof MrzReading, kind: 'text' | 'date' | 'name' | 'nationality'][] = [
+  const sexMatches = (ocrValue: string, mrzValue: string) => {
+    const a = sexCode(ocrValue)
+    const b = sexCode(mrzValue)
+    return a && b ? a === b : textMatches(ocrValue, mrzValue)
+  }
+
+  const spec: [label: string, ocrKeys: string[], mrzKey: keyof MrzReading, kind: 'text' | 'date' | 'name' | 'nationality' | 'sex'][] = [
     ['Document number', ['id_number', 'doc_number'], 'passport_number', 'text'],
     ['Date of birth', ['dob', 'date_of_birth'], 'date_of_birth', 'date'],
     ['Surname', ['surname'], 'surname', 'name'],
     ['Given names', ['given_names'], 'given_names', 'name'],
     ['Date of expiry', ['expiry', 'expiry_date'], 'expiry_date', 'date'],
     ['Nationality', ['nationality'], 'nationality', 'nationality'],
+    ['Sex', ['sex', 'gender'], 'sex', 'sex'],
   ]
 
   return spec.map(([label, ocrKeys, mrzKey, kind]) => {
@@ -230,7 +260,14 @@ export function crossCheck(row: VerificationDetail): CrossCheckRow[] {
     let match = false
     if (kind === 'name') match = !!(ocrValue && nameMatches(ocrValue, mrzValue))
     else if (ocrValue && mrzValue)
-      match = kind === 'date' ? dateMatches(ocrValue, mrzValue) : kind === 'nationality' ? nationalityMatches(ocrValue, mrzValue) : textMatches(ocrValue, mrzValue)
+      match =
+        kind === 'date'
+          ? dateMatches(ocrValue, mrzValue)
+          : kind === 'nationality'
+            ? nationalityMatches(ocrValue, mrzValue)
+            : kind === 'sex'
+              ? sexMatches(ocrValue, mrzValue)
+              : textMatches(ocrValue, mrzValue)
     // Some parsers leave given_names empty and put the whole name in surname.
     const shown = kind === 'name' && !mrzValue ? fullName(mrz) || null : mrzValue
     return { label, ocrValue, mrzValue: shown, match }

@@ -385,6 +385,7 @@ function MrzTab({ row }: { row: VerificationDetail }) {
           <InfoItem label="Surname">{mrz.surname || '—'}</InfoItem>
           <InfoItem label="Date of birth">{mrz.date_of_birth || '—'}</InfoItem>
           <InfoItem label="Nationality">{mrz.nationality || '—'}</InfoItem>
+          <InfoItem label="Sex">{mrz.sex || '—'}</InfoItem>
           <InfoItem label="Date of expiry">{mrz.expiry_date || '—'}</InfoItem>
           <InfoItem label="Document number" mono>
             {mrz.passport_number || '—'}

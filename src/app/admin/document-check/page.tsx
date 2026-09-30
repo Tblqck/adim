@@ -170,6 +170,7 @@ export default function DocumentCheckPage() {
                     <InfoItem label="Surname">{mrz.fields?.surname || '—'}</InfoItem>
                     <InfoItem label="Date of birth">{mrz.fields?.date_of_birth || '—'}</InfoItem>
                     <InfoItem label="Nationality">{mrz.fields?.nationality || '—'}</InfoItem>
+                    <InfoItem label="Sex">{mrz.fields?.sex || '—'}</InfoItem>
                     <InfoItem label="Expiry">{mrz.fields?.expiry_date || '—'}</InfoItem>
                     <InfoItem label="Document number" mono>
                       {mrz.fields?.passport_number || '—'}
