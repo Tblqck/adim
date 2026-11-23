@@ -25,7 +25,7 @@ const VERDICTS: [string, string][] = [
   ['face_ai_mismatch', 'The two face models disagreed — a strong fraud signal.'],
   ['mrz_unreadable', 'An MRZ zone was found but could not be parsed or checksummed.'],
   ['mrz_tampered', 'MRZ check digits did not validate.'],
-  ['liveness_fail', 'The selfie frames failed the anti-spoof check.'],
+  ['liveness_fail', 'The live frames did not show a live person: no movement between frames, a different face, or the wrong head-turn order.'],
   ['fail', 'Nothing matched.'],
 ]
 

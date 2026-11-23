@@ -37,7 +37,14 @@ export interface ReviewIssue {
   items?: string[]
 }
 
-export type ResultKind = 'SIGNIFICANT_ISSUES' | 'NEEDS_REVIEW' | 'NOT_ENOUGH_DATA' | 'NO_ISSUES'
+const LIVENESS_REASON: Record<string, string> = {
+  frames_identical: 'The frames are copies of one image — nothing moved between them',
+  challenge_not_shown: 'The head turns in the frames do not follow the order this link asked for',
+  different_faces: 'The frames do not all show the same face',
+  frames_not_sharp: 'The frames are too blurred to judge',
+}
+
+export type ResultKind ='SIGNIFICANT_ISSUES' | 'NEEDS_REVIEW' | 'NOT_ENOUGH_DATA' | 'NO_ISSUES'
 
 export const RESULT_LABEL: Record<ResultKind, string> = {
   SIGNIFICANT_ISSUES: 'Significant issues',
@@ -180,25 +187,45 @@ export function assessVerification(row: VerificationDetail): Assessment {
   }
 
   // ── Liveness (only captured with live frames) ─────────────────────────
+  // The API decides liveness from the frames themselves (production/core/
+  // liveness.py): frames must differ, show one face throughout, and — for a
+  // verification link — show the head-turn order the server gave that link.
+  // liveness_method says which of those ran: "challenge" (all of them),
+  // "frames" (no challenge: an API-key upload), "heuristic" (results from
+  // before 2026-11-23, sharpness only).
   if (row.verification_mode === 3) {
+    const live = row.pipeline_response?.liveness
     if (row.liveness_verdict === 'fail') {
+      const why = (live?.reasons ?? []).map((r) => LIVENESS_REASON[r] ?? humanize(r))
       add({
         key: 'liveness-fail',
         severity: 'danger',
         title: 'Liveness check failed',
-        description: `The live frames did not pass the anti-spoofing check (score ${pct(row.liveness_score)}). This can mean a photo or screen was held up to the camera.`,
+        description: why.length
+          ? 'The live frames did not show a live person in front of the camera. This can mean a photo, a screen or images not taken on the capture page.'
+          : `The live frames did not pass the liveness check (score ${pct(row.liveness_score)}). This can mean a photo or screen was held up to the camera.`,
+        items: why.length ? why : undefined,
         tab: 'scores',
         linkLabel: 'Open model scores',
       })
     } else if (!row.liveness_verdict) {
       missingChecks.push('liveness')
     }
-    if (row.liveness_method && row.liveness_method !== 'onnx') {
+    if (row.liveness_method === 'heuristic') {
       add({
-        key: 'liveness-fallback',
+        key: 'liveness-sharpness-only',
         severity: 'warning',
-        title: 'Liveness came from the fallback method',
-        description: 'The anti-spoofing model did not run, so liveness was judged on image sharpness alone — a much weaker signal. Treat a pass here with caution.',
+        title: 'Liveness checked on image sharpness only',
+        description: 'This verification predates the server-side head-turn check, so its frames were checked for sharpness only. That catches blurry printed photos but not a sharp photo or a screen — review the selfie frames yourself.',
+        tab: 'scores',
+        linkLabel: 'Open model scores',
+      })
+    } else if (row.liveness_method === 'frames' && row.liveness_verdict !== 'fail') {
+      add({
+        key: 'liveness-no-challenge',
+        severity: 'info',
+        title: 'Head-turn order was not checked',
+        description: 'The frames were checked for movement and for one face throughout, but not against a head-turn order — the images came through the API rather than a verification link.',
         tab: 'scores',
         linkLabel: 'Open model scores',
       })

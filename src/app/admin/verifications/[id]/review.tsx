@@ -24,6 +24,14 @@ import { crossCheck, EDITABLE_FIELDS, fieldValue, mrzReading, VERDICT_OPTIONS } 
 
 type TabKey = ReviewTab
 
+// What produced the liveness verdict (production/core/liveness.py). The score
+// shown beside it is the frames' best sharpness, kept from the old method.
+const LIVENESS_METHOD: Record<string, string> = {
+  challenge: 'Server-side: head-turn order for this link, frame movement, same face throughout',
+  frames: 'Server-side: frame movement and same face throughout (API upload, no head-turn order)',
+  heuristic: 'Laplacian sharpness only — no anti-spoofing check (before 23 Nov 2026)',
+}
+
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: 'Overview' },
   { key: 'scores', label: 'Model scores' },
@@ -303,7 +311,7 @@ function ScoresTab({ row, edit, setEdit }: { row: VerificationDetail; edit: Edit
             label="Liveness"
             score={row.liveness_score}
             verdict={row.liveness_verdict}
-            model={row.liveness_method === 'onnx' ? 'MiniFASNetV2.onnx (anti-spoofing model)' : 'Heuristic fallback — Laplacian sharpness, not the ONNX anti-spoofing model'}
+            model={LIVENESS_METHOD[row.liveness_method ?? ''] ?? 'Laplacian sharpness only — no anti-spoofing check'}
             row={row}
             edit={edit}
             setEdit={setEdit}

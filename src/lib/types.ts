@@ -170,6 +170,20 @@ export interface TemplateBox {
   note?: string
 }
 
+/** The API's server-side liveness result (production/core/liveness.py). */
+export interface LivenessResult {
+  is_live?: boolean
+  method?: string
+  /** Why it failed: frames_not_sharp, frames_identical, different_faces, challenge_not_shown. */
+  reasons?: string[]
+  checks?: {
+    challenge?: { expected?: string[]; observed?: string[]; passed?: boolean; enforced?: boolean } | null
+    continuity?: { passed?: boolean | null; min_similarity?: number | null } | null
+    diversity?: { passed?: boolean; max_diff?: number } | null
+    antispoof?: { available?: boolean; min_score?: number | null; would_pass?: boolean | null } | null
+  }
+}
+
 export interface VerificationDetail extends VerificationRow {
   images?: { id_front_url?: string; id_back_url?: string; face_urls?: string[] }
   corrected_fields?: Record<string, string> | null
@@ -183,6 +197,7 @@ export interface VerificationDetail extends VerificationRow {
       expected_side?: string
     }
     template_match?: Record<string, TemplateMatchSide> | null
+    liveness?: LivenessResult | null
   } | null
   face_match_score?: number | null
   face_match_verdict?: string | null
